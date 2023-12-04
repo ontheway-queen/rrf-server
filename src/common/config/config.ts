@@ -1,7 +1,7 @@
-import path from "path";
-import dotenv from "dotenv";
+import path from 'path';
+import dotenv from 'dotenv';
 // Parsing the env file.
-dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 // Interface to load env variables
 // Note these variables can possibly be undefined
@@ -10,7 +10,9 @@ dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
 interface ENV {
   DB_PASS: string | undefined;
   DB_HOST: string | undefined;
-  DO_DB_PASS: string | undefined;
+  DB_NAME: string | undefined;
+  DB_USER: string | undefined;
+  DB_PORT: string | undefined;
   PORT: number | undefined;
   COOKIE_SECRET: string | undefined;
   JWT_SECRET: string | undefined;
@@ -23,7 +25,9 @@ interface ENV {
 interface Config {
   DB_PASS: string;
   DB_HOST: string;
-  DO_DB_PASS: string;
+  DB_NAME: string;
+  DB_USER: string;
+  DB_PORT: string;
   PORT: number;
   COOKIE_SECRET: string;
   JWT_SECRET: string;
@@ -39,7 +43,9 @@ const getConfig = (): ENV => {
   return {
     DB_PASS: process.env.DB_PASS,
     DB_HOST: process.env.DB_HOST,
-    DO_DB_PASS: process.env.DO_DB_PASS,
+    DB_NAME: process.env.DB_HOST,
+    DB_USER: process.env.DB_HOST,
+    DB_PORT: process.env.DB_HOST,
     PORT: process.env.PORT ? Number(process.env.PORT) : 4001,
     COOKIE_SECRET: process.env.COOKIE_SECRET,
     JWT_SECRET: process.env.JWT_SECRET,

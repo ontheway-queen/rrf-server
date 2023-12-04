@@ -7,24 +7,13 @@ exports.dbCon = void 0;
 const config_1 = __importDefault(require("./common/config/config"));
 const mysql2_1 = __importDefault(require("mysql2"));
 class OtwDb {
-    // constructor() {
-    //   this.conn = mysql.createPool({
-    //     connectionLimit: 100,
-    //     host: 'm360ictecommerce.cz7yrv0b23wp.ap-south-1.rds.amazonaws.com',
-    //     user: 'ngf_admin',
-    //     password: config.DO_DB_PASS,
-    //     database: 'rrf',
-    //     queueLimit: 100,
-    //     port: 3306,
-    //   });
-    // }
     constructor() {
         this.conn = mysql2_1.default.createPool({
             connectionLimit: 100,
             host: config_1.default.DB_HOST,
-            user: "root",
+            user: config_1.default.DB_USER,
             password: config_1.default.DB_PASS,
-            database: "rrf",
+            database: config_1.default.DB_NAME,
             queueLimit: 100,
         });
     }

@@ -1,27 +1,16 @@
-import config from "./common/config/config";
-import mysql, { Pool } from "mysql2";
+import config from './common/config/config';
+import mysql, { Pool } from 'mysql2';
 
 class OtwDb {
   private conn: Pool;
-  // constructor() {
-  //   this.conn = mysql.createPool({
-  //     connectionLimit: 100,
-  //     host: 'm360ictecommerce.cz7yrv0b23wp.ap-south-1.rds.amazonaws.com',
-  //     user: 'ngf_admin',
-  //     password: config.DO_DB_PASS,
-  //     database: 'rrf',
-  //     queueLimit: 100,
-  //     port: 3306,
-  //   });
-  // }
 
   constructor() {
     this.conn = mysql.createPool({
       connectionLimit: 100,
       host: config.DB_HOST,
-      user: "root",
+      user: config.DB_USER,
       password: config.DB_PASS,
-      database: "rrf",
+      database: config.DB_NAME,
       queueLimit: 100,
     });
   }
