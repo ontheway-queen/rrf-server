@@ -15,6 +15,7 @@ class OtwDb {
             password: config_1.default.DB_PASS,
             database: config_1.default.DB_NAME,
             queueLimit: 100,
+            port: parseInt(config_1.default.DB_PORT),
         });
     }
     /*  getConnection  */
