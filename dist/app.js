@@ -16,22 +16,12 @@ const otwApp_1 = __importDefault(require("./appOntheway/otwApp"));
 const path_1 = __importDefault(require("path"));
 const compress_1 = __importDefault(require("./common/middlewares/compresser/compress"));
 const origin = [
-    "http://localhost:3000",
-    "http://localhost:3002",
-    "http://192.168.0.237:3000",
-    "http://192.168.0.237:3001",
-    "http://192.168.0.238:3000",
-    "http://192.168.0.238:3001",
-    "http://192.168.0.53:3002",
-    "http://192.168.0.53:3001",
-    "http://localhost:3001",
-    "https://server.sunderbanmart.com",
-    "https://www.server.sunderbanmart.com",
-    "https://sunderbanmart.com",
-    "https://www.sunderbanmart.com",
-    "https://admin.sunderbanmart.com",
-    "https://www.admin.sunderbanmart.com",
-    "https://main.d1qfwt8w8le6q6.amplifyapp.com",
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'https://www.rrfmart.com',
+    'https://rrfmart.com',
+    'https://www.admin.rrfmart.com',
+    'https://admin.rrfmart.com',
 ];
 class App {
     constructor(port, otwRouters) {
@@ -48,7 +38,7 @@ class App {
     }
     initMiddlewares() {
         this.app.use(express_1.default.json());
-        this.app.use((0, morgan_1.default)("tiny"));
+        this.app.use((0, morgan_1.default)('tiny'));
         this.app.use((0, cookie_parser_1.default)(config_1.default.COOKIE_SECRET));
         this.app.use(express_1.default.urlencoded({ extended: true }));
         this.app.use((0, cors_1.default)({ origin: this.origin, credentials: true }));
@@ -58,36 +48,36 @@ class App {
          *
          * GET IMAGE
          */
-        this.app.get("/api/get/image/:folder/:filename", (req, res) => {
+        this.app.get('/api/get/image/:folder/:filename', (req, res) => {
             const { folder, filename } = req.params;
             res.sendFile(path_1.default.resolve(`${__dirname}/uploads/${folder}/${filename}`));
         });
         // send a video file
-        this.app.get("/api/get/video/:folder/:filename", (req, res) => {
+        this.app.get('/api/get/video/:folder/:filename', (req, res) => {
             const { folder, filename } = req.params;
             res.sendFile(path_1.default.resolve(`${__dirname}/uploads/${folder}/${filename}`));
         });
         // send video file as stream
-        this.app.get("/api/get/video/stream/:folder/:filename", (req, res) => {
+        this.app.get('/api/get/video/stream/:folder/:filename', (req, res) => {
             const { folder, filename } = req.params;
             // Ensure there is a range given for the video
             const range = req.headers.range;
             if (!range) {
-                res.status(400).send("Requires Range header");
+                res.status(400).send('Requires Range header');
             }
             else {
                 const videoPath = `${__dirname}/uploads/${folder}/${filename}`;
                 const videoSize = fs_1.default.statSync(`${__dirname}/uploads/${folder}/${filename}`).size;
                 const CHUNK_SIZE = 10 ** 6; // 1MB
-                const start = Number(range.replace(/\D/g, ""));
+                const start = Number(range.replace(/\D/g, ''));
                 const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
                 // Create headers
                 const contentLength = end - start + 1;
                 const headers = {
-                    "Content-Range": `bytes ${start}-${end}/${videoSize}`,
-                    "Accept-Ranges": "bytes",
-                    "Content-Length": contentLength,
-                    "Content-Type": "video/mp4",
+                    'Content-Range': `bytes ${start}-${end}/${videoSize}`,
+                    'Accept-Ranges': 'bytes',
+                    'Content-Length': contentLength,
+                    'Content-Type': 'video/mp4',
                 };
                 // HTTP Status 206 for Partial Content
                 res.writeHead(206, headers);
@@ -100,17 +90,17 @@ class App {
         /**
          * DOWNLOAD FILE
          */
-        this.app.get("/api/download/files/:folder/:filename", (req, res) => {
+        this.app.get('/api/download/files/:folder/:filename', (req, res) => {
             const { folder, filename } = req.params;
             res.download(path_1.default.resolve(`${__dirname}/uploads/${folder}/${filename}`));
         });
     }
     initRouters(otwRouters) {
-        this.app.get("/", (_req, res) => {
-            res.send("server is running...");
+        this.app.get('/', (_req, res) => {
+            res.send('server is running...');
         });
         // ontheway application
-        this.app.use("/", new otwApp_1.default(otwRouters).app);
+        this.app.use('/', new otwApp_1.default(otwRouters).app);
         // freelancing application
         // this.app.use('/out', new OutApp(outRouters).app);
         // social media application
@@ -131,8 +121,8 @@ class App {
         this.app.use(errorHandler.handleErrors);
     }
     socket() {
-        socket_1.io.on("connection", (socket) => {
-            console.log("connected: " + socket.id);
+        socket_1.io.on('connection', (socket) => {
+            console.log('connected: ' + socket.id);
         });
     }
     listen() {

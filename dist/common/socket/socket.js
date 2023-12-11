@@ -9,25 +9,15 @@ const http_1 = __importDefault(require("http"));
 const socketServer = (app) => {
     const server = http_1.default.createServer(app);
     exports.io = new socket_io_1.Server(server, {
-        path: "/api/socket",
+        path: '/api/socket',
         cors: {
             origin: [
-                "http://localhost:3000",
-                "http://localhost:3002",
-                "http://192.168.0.237:3000",
-                "http://192.168.0.237:3001",
-                "http://192.168.0.238:3000",
-                "http://192.168.0.238:3001",
-                "http://192.168.0.53:3002",
-                "http://192.168.0.53:3001",
-                "http://localhost:3001",
-                "https://server.sunderbanmart.com",
-                "https://www.server.sunderbanmart.com",
-                "https://sunderbanmart.com",
-                "https://www.sunderbanmart.com",
-                "https://admin.sunderbanmart.com",
-                "https://www.admin.sunderbanmart.com",
-                "https://main.d1qfwt8w8le6q6.amplifyapp.com",
+                'http://localhost:3000',
+                'http://localhost:3001',
+                'https://www.rrfmart.com',
+                'https://rrfmart.com',
+                'https://www.admin.rrfmart.com',
+                'https://admin.rrfmart.com',
             ],
             credentials: true,
         },
