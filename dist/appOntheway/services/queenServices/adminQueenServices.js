@@ -19,7 +19,7 @@ class AdminQueensServices extends abstractServices_1.default {
         // get queen by date range
         this.getQueenByDateRange = (req) => __awaiter(this, void 0, void 0, function* () {
             const { from, to } = req.query;
-            const sql = `SELECT id, name,status,queen_category, phone, photo,last_update AS reg_at, note FROM rrf.admin_queens WHERE last_update BETWEEN ? AND ?`;
+            const sql = `SELECT id, name,status,queen_category, phone, photo,last_update AS reg_at, note FROM rrf_ecommerce.admin_queens WHERE last_update BETWEEN ? AND ?`;
             const values = [from, to];
             const data = yield this.query.rawQuery(sql, values);
             return { success: true, data };
@@ -28,7 +28,7 @@ class AdminQueensServices extends abstractServices_1.default {
         this.getQueenByDateRangeAndStatus = (req) => __awaiter(this, void 0, void 0, function* () {
             const { status } = req.params;
             const { from, to } = req.query;
-            const sql = `SELECT id, name,status,queen_category, phone, photo,last_update AS reg_at, note FROM rrf.admin_queens WHERE status = ? AND last_update BETWEEN ? AND ?`;
+            const sql = `SELECT id, name,status,queen_category, phone, photo,last_update AS reg_at, note FROM rrf_ecommerce.admin_queens WHERE status = ? AND last_update BETWEEN ? AND ?`;
             const values = [status, from, to];
             const data = yield this.query.rawQuery(sql, values);
             return { success: true, data };
@@ -36,7 +36,7 @@ class AdminQueensServices extends abstractServices_1.default {
         // get queen by date
         this.getQueenByDate = (req) => __awaiter(this, void 0, void 0, function* () {
             const { date } = req.query;
-            const sql = `SELECT id, name,status,queen_category, phone, photo, last_update AS reg_at, note FROM rrf.admin_queens WHERE date(last_update) = ?`;
+            const sql = `SELECT id, name,status,queen_category, phone, photo, last_update AS reg_at, note FROM rrf_ecommerce.admin_queens WHERE date(last_update) = ?`;
             const values = [date];
             const data = yield this.query.rawQuery(sql, values);
             return { success: true, data };
@@ -45,7 +45,7 @@ class AdminQueensServices extends abstractServices_1.default {
         this.getQueenByDateAndStatus = (req) => __awaiter(this, void 0, void 0, function* () {
             const { status } = req.params;
             const { date } = req.query;
-            const sql = `SELECT id, name,status, phone, queen_category, photo, last_update AS reg_at, note FROM rrf.admin_queens WHERE status = ? AND date(last_update) = ?`;
+            const sql = `SELECT id, name,status, phone, queen_category, photo, last_update AS reg_at, note FROM rrf_ecommerce.admin_queens WHERE status = ? AND date(last_update) = ?`;
             const values = [status, date];
             const data = yield this.query.rawQuery(sql, values);
             return { success: true, data };
@@ -56,78 +56,78 @@ class AdminQueensServices extends abstractServices_1.default {
             const { status, category } = req.params;
             console.log({ status, category, limit, skip });
             const fields = [
-                "id",
-                "name",
-                "phone",
-                "photo",
-                "status",
-                "note",
-                "queen_category",
+                'id',
+                'name',
+                'phone',
+                'photo',
+                'status',
+                'note',
+                'queen_category',
             ];
             let where = null;
-            if (category !== "all" &&
-                status !== "all" &&
-                category !== "All" &&
-                status !== "All") {
+            if (category !== 'all' &&
+                status !== 'all' &&
+                category !== 'All' &&
+                status !== 'All') {
                 where = {
                     and: [
-                        { table: "admin_queens", field: "status", value: `'${status}'` },
+                        { table: 'admin_queens', field: 'status', value: `'${status}'` },
                         {
-                            table: "admin_queens",
-                            field: "queen_category",
+                            table: 'admin_queens',
+                            field: 'queen_category',
                             value: `'${category}'`,
                         },
                     ],
                 };
             }
             else {
-                if (category !== "all" && category !== "All") {
+                if (category !== 'all' && category !== 'All') {
                     where = {
-                        table: "admin_queens",
-                        field: "queen_category",
+                        table: 'admin_queens',
+                        field: 'queen_category',
                         value: `'${category}'`,
                     };
                 }
-                if (status !== "all" && status !== "All") {
+                if (status !== 'all' && status !== 'All') {
                     where = {
-                        table: "admin_queens",
-                        field: "status",
+                        table: 'admin_queens',
+                        field: 'status',
                         value: `'${status}'`,
                     };
                 }
             }
-            let forCuntSql = `SELECT count(rrf.admin_queens.id) as total FROM rrf.admin_queens`;
+            let forCuntSql = `SELECT count(rrf_ecommerce.admin_queens.id) as total FROM rrf_ecommerce.admin_queens`;
             let countArr = [];
             let data = [];
             if (where) {
                 data = yield this.query.select({
-                    fields: { columns: fields, as: [["last_update", "reg_at"]] },
-                    table: "admin_queens",
+                    fields: { columns: fields, as: [['last_update', 'reg_at']] },
+                    table: 'admin_queens',
                     where,
                     limit: { limit: limit, skip: Number(skip) || 0 },
-                    orderBy: { table: "admin_queens", field: "last_update" },
+                    orderBy: { table: 'admin_queens', field: 'last_update' },
                     desc: true,
                 });
-                if ((where === null || where === void 0 ? void 0 : where.field) === "queen_category") {
-                    forCuntSql = `SELECT count(rrf.admin_queens.id) as total FROM rrf.admin_queens where admin_queens.queen_category = ? `;
+                if ((where === null || where === void 0 ? void 0 : where.field) === 'queen_category') {
+                    forCuntSql = `SELECT count(rrf_ecommerce.admin_queens.id) as total FROM rrf_ecommerce.admin_queens where admin_queens.queen_category = ? `;
                     countArr.push(category);
                 }
-                else if ((where === null || where === void 0 ? void 0 : where.field) === "status") {
-                    forCuntSql = `SELECT count(rrf.admin_queens.id) as total FROM rrf.admin_queens where admin_queens.status = ? `;
+                else if ((where === null || where === void 0 ? void 0 : where.field) === 'status') {
+                    forCuntSql = `SELECT count(rrf_ecommerce.admin_queens.id) as total FROM rrf_ecommerce.admin_queens where admin_queens.status = ? `;
                     countArr.push(status);
                 }
                 else {
-                    forCuntSql = `SELECT count(rrf.admin_queens.id) as total FROM rrf.admin_queens where admin_queens.queen_category = ? and admin_queens.status = ?`;
+                    forCuntSql = `SELECT count(rrf_ecommerce.admin_queens.id) as total FROM rrf_ecommerce.admin_queens where admin_queens.queen_category = ? and admin_queens.status = ?`;
                     countArr.push(category);
                     countArr.push(status);
                 }
             }
             else {
                 data = yield this.query.select({
-                    fields: { columns: fields, as: [["last_update", "reg_at"]] },
-                    table: "admin_queens",
+                    fields: { columns: fields, as: [['last_update', 'reg_at']] },
+                    table: 'admin_queens',
                     limit: { limit: limit, skip: Number(skip) || 0 },
-                    orderBy: { table: "admin_queens", field: "last_update" },
+                    orderBy: { table: 'admin_queens', field: 'last_update' },
                     desc: true,
                 });
             }
@@ -144,22 +144,22 @@ class AdminQueensServices extends abstractServices_1.default {
         return __awaiter(this, void 0, void 0, function* () {
             const { limit, skip } = req.query;
             const fields = [
-                "id",
-                "name",
-                "phone",
-                "queen_category",
-                "photo",
-                "status",
-                "note",
+                'id',
+                'name',
+                'phone',
+                'queen_category',
+                'photo',
+                'status',
+                'note',
             ];
             const data = yield this.query.select({
-                fields: { columns: fields, as: [["last_update", "reg_at"]] },
-                table: "admin_queens",
+                fields: { columns: fields, as: [['last_update', 'reg_at']] },
+                table: 'admin_queens',
                 limit: { limit: limit, skip: Number(skip) || 0 },
-                orderBy: { table: "admin_queens", field: "last_update" },
+                orderBy: { table: 'admin_queens', field: 'last_update' },
                 desc: true,
             });
-            const forCount = "SELECT count(rrf.admin_queens.id) as total FROM rrf.admin_queens";
+            const forCount = 'SELECT count(rrf_ecommerce.admin_queens.id) as total FROM rrf_ecommerce.admin_queens';
             const count = yield this.query.rawQuery(forCount);
             // }
             return {
@@ -175,24 +175,24 @@ class AdminQueensServices extends abstractServices_1.default {
             const { limit, skip } = req.query;
             const { status } = req.params;
             const fields = [
-                "id",
-                "name",
-                "phone",
-                "photo",
-                "status",
-                "note",
-                "queen_category",
+                'id',
+                'name',
+                'phone',
+                'photo',
+                'status',
+                'note',
+                'queen_category',
             ];
             const data = yield this.query.select({
-                fields: { columns: fields, as: [["last_update", "reg_at"]] },
-                table: "admin_queens",
-                where: { table: "admin_queens", field: "status", value: `'${status}'` },
+                fields: { columns: fields, as: [['last_update', 'reg_at']] },
+                table: 'admin_queens',
+                where: { table: 'admin_queens', field: 'status', value: `'${status}'` },
                 limit: { limit: limit, skip: Number(skip) || 0 },
-                orderBy: { table: "admin_queens", field: "last_update" },
+                orderBy: { table: 'admin_queens', field: 'last_update' },
                 desc: true,
             });
             // let count: any = [];
-            const forCount = "SELECT count(rrf.admin_queens.id) as total FROM rrf.admin_queens where rrf.admin_queens.status=?";
+            const forCount = 'SELECT count(rrf_ecommerce.admin_queens.id) as total FROM rrf_ecommerce.admin_queens where rrf_ecommerce.admin_queens.status=?';
             // if (skip === '0') {
             const count = yield this.query.rawQuery(forCount, [status]);
             // }
@@ -217,57 +217,57 @@ class AdminQueensServices extends abstractServices_1.default {
                 if (filename)
                     req.body.photo = filename;
                 const prev = yield query.select({
-                    fields: { columns: ["photo", "seller"] },
-                    table: "admin_queens",
-                    where: { table: "admin_queens", field: "id", value: id },
+                    fields: { columns: ['photo', 'seller'] },
+                    table: 'admin_queens',
+                    where: { table: 'admin_queens', field: 'id', value: id },
                 });
                 yield query.update({
-                    table: "admin_queens",
+                    table: 'admin_queens',
                     data: req.body,
                     where: { id },
                 });
-                if (req.body.status === "rejected") {
+                if (req.body.status === 'rejected') {
                     yield query.delete({
-                        table: "products",
+                        table: 'products',
                         where: { queen_id: id },
                     });
                 }
                 const fields = [
-                    "id",
-                    "name",
-                    "phone",
-                    "photo",
-                    "address",
-                    "nid_front",
-                    "nid_back",
-                    "city",
-                    "post_code",
-                    "designation",
-                    "queen_category",
+                    'id',
+                    'name',
+                    'phone',
+                    'photo',
+                    'address',
+                    'nid_front',
+                    'nid_back',
+                    'city',
+                    'post_code',
+                    'designation',
+                    'queen_category',
                 ];
-                if (req.body.status === "Approved") {
-                    const reval = [...fields, "lat", "lng", "email"];
+                if (req.body.status === 'Approved') {
+                    const reval = [...fields, 'lat', 'lng', 'email'];
                     reval.shift();
                     const res = yield query.replace({
-                        into: "queens",
-                        replace: [...reval, "admin_queens_id"],
-                        select: [...reval, "id"],
-                        from: "admin_queens",
+                        into: 'queens',
+                        replace: [...reval, 'admin_queens_id'],
+                        select: [...reval, 'id'],
+                        from: 'admin_queens',
                         where: { id },
                     });
                 }
                 else {
                     yield query.delete({
-                        table: "queens",
+                        table: 'queens',
                         where: { admin_queens_id: id },
                     });
                 }
                 if (filename && prev.length > 0) {
-                    this.deleteFile.delete("queens", prev[0].photo);
+                    this.deleteFile.delete('queens', prev[0].photo);
                 }
                 return {
                     success: true,
-                    message: "Queen info successfully updated",
+                    message: 'Queen info successfully updated',
                     data: filename,
                 };
             }));

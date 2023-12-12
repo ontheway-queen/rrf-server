@@ -23,7 +23,7 @@ class QueenServices extends abstractServices_1.default {
     searchQueen(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const { name } = req.params;
-            const sql = "SELECT queens.admin_queens_id as id, queens.name, queens.photo, queens.city, queens.division, queens.designation FROM rrf.queens where match(queens.name) against(?)";
+            const sql = 'SELECT queens.admin_queens_id as id, queens.name, queens.photo, queens.city, queens.division, queens.designation FROM rrf_ecommerce.queens where match(queens.name) against(?)';
             const data = yield this.query.rawQuery(sql, [name]);
             return {
                 success: true,
@@ -51,40 +51,40 @@ class QueenServices extends abstractServices_1.default {
                 if (division)
                     info.division = division;
                 yield query.update({
-                    table: "admin_queens",
+                    table: 'admin_queens',
                     data: info,
                     where: { id },
                 });
                 const data = yield query.select({
-                    table: "queens",
-                    fields: { columns: ["name"] },
-                    where: { table: "queens", field: "admin_queens_id", value: id },
+                    table: 'queens',
+                    fields: { columns: ['name'] },
+                    where: { table: 'queens', field: 'admin_queens_id', value: id },
                 });
                 if (data.length > 0) {
                     const upVals = [
-                        "name",
-                        "phone",
-                        "photo",
-                        "address",
-                        "post_code",
-                        "city",
-                        "division",
-                        "lat",
-                        "lng",
-                        "nid_front",
-                        "nid_back",
+                        'name',
+                        'phone',
+                        'photo',
+                        'address',
+                        'post_code',
+                        'city',
+                        'division',
+                        'lat',
+                        'lng',
+                        'nid_front',
+                        'nid_back',
                     ];
                     if (email)
-                        upVals.push("email");
+                        upVals.push('email');
                     yield query.replace({
-                        replace: [...upVals, "admin_queens_id"],
-                        into: "queens",
-                        select: [...upVals, "id"],
-                        from: "admin_queens",
+                        replace: [...upVals, 'admin_queens_id'],
+                        into: 'queens',
+                        select: [...upVals, 'id'],
+                        from: 'admin_queens',
                         where: { id },
                     });
                 }
-                return { success: true, message: "Queen successfully updated" };
+                return { success: true, message: 'Queen successfully updated' };
             }));
             return data;
         });
@@ -95,10 +95,10 @@ class QueenServices extends abstractServices_1.default {
     getAllApprovedQueens(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const { limit, skip } = req.query;
-            const sql = "SELECT distinct queens.admin_queens_id as id,(select count(admin_products_id) as total_product from rrf.products where products.queen_id = queens.admin_queens_id)  as total_product, queens.name, queens.photo FROM rrf.queens join rrf.products where rrf.queens.admin_queens_id = rrf.products.queen_id order by (select count(admin_products_id) as total_product from rrf.products where products.queen_id = queens.admin_queens_id) desc limit ? offset ?";
+            const sql = 'SELECT distinct queens.admin_queens_id as id,(select count(admin_products_id) as total_product from rrf_ecommerce.products where products.queen_id = queens.admin_queens_id)  as total_product, queens.name, queens.photo FROM rrf_ecommerce.queens join rrf_ecommerce.products where rrf_ecommerce.queens.admin_queens_id = rrf_ecommerce.products.queen_id order by (select count(admin_products_id) as total_product from rrf_ecommerce.products where products.queen_id = queens.admin_queens_id) desc limit ? offset ?';
             const values = [Number(limit), Number(skip)];
             const data = yield this.query.rawQuery(sql, values);
-            const forCount = "SELECT count(distinct(rrf.queens.admin_queens_id)) as total FROM rrf.queens join rrf.products where rrf.queens.admin_queens_id = rrf.products.queen_id";
+            const forCount = 'SELECT count(distinct(rrf_ecommerce.queens.admin_queens_id)) as total FROM rrf_ecommerce.queens join rrf_ecommerce.products where rrf_ecommerce.queens.admin_queens_id = rrf_ecommerce.products.queen_id';
             const count = yield this.query.rawQuery(forCount);
             return {
                 success: true,
@@ -115,25 +115,25 @@ class QueenServices extends abstractServices_1.default {
             const { id } = req.params;
             const { old_password, new_password } = req.body;
             const oldPass = yield this.query.select({
-                fields: { columns: ["password"] },
-                table: "admin_queens",
-                where: { table: "admin_queens", field: "id", value: id },
+                fields: { columns: ['password'] },
+                table: 'admin_queens',
+                where: { table: 'admin_queens', field: 'id', value: id },
             });
             const isPassValid = yield lib_1.default.compare(old_password, oldPass[0].password);
             if (isPassValid) {
                 const hashedPassword = yield lib_1.default.hashPass(new_password);
                 yield this.query.update({
                     data: { password: hashedPassword },
-                    table: "admin_queens",
+                    table: 'admin_queens',
                     where: { id },
                 });
                 return {
                     success: true,
-                    message: "Your password changed successfully",
+                    message: 'Your password changed successfully',
                 };
             }
             else {
-                throw new customError_1.default("Your old password is incorrect", 400, "Bad request");
+                throw new customError_1.default('Your old password is incorrect', 400, 'Bad request');
             }
         });
     }
@@ -148,12 +148,12 @@ class QueenServices extends abstractServices_1.default {
             // });
             const data = [];
             if (data) {
-                return { success: true, message: "Successfully deleted the Customer" };
+                return { success: true, message: 'Successfully deleted the Customer' };
             }
             else {
                 return {
                     success: false,
-                    message: "No data found with this Phone",
+                    message: 'No data found with this Phone',
                 };
             }
         });

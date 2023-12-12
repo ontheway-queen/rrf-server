@@ -28,43 +28,43 @@ class ProductServices extends abstractServices_1.default {
             const productValues = Object.assign(Object.assign({}, req.body), { product_picture_1,
                 product_picture_2, tags: `${req.body.category} ${req.body.tags}` });
             return yield this.transaction.beginTransaction((query) => __awaiter(this, void 0, void 0, function* () {
-                const data = yield query.insert("admin_products", productValues);
+                const data = yield query.insert('admin_products', productValues);
                 const columns = [
-                    "id",
-                    "queen_id",
-                    "product_name",
-                    "category",
-                    "product_picture_1",
-                    "product_picture_2",
-                    "price",
-                    "delivery_day",
-                    "short_desc",
-                    "status",
-                    "tags",
-                    "weight",
-                    "stock_status",
+                    'id',
+                    'queen_id',
+                    'product_name',
+                    'category',
+                    'product_picture_1',
+                    'product_picture_2',
+                    'price',
+                    'delivery_day',
+                    'short_desc',
+                    'status',
+                    'tags',
+                    'weight',
+                    'stock_status',
                 ];
                 const response = yield query.select({
-                    table: "admin_products",
+                    table: 'admin_products',
                     fields: {
                         columns,
                         otherFields: [
                             {
-                                table: "admin_queens",
+                                table: 'admin_queens',
                                 as: [
-                                    ["photo", "queen_photo"],
-                                    ["name", "queen_name"],
+                                    ['photo', 'queen_photo'],
+                                    ['name', 'queen_name'],
                                 ],
                             },
                         ],
                     },
                     join: [
                         {
-                            join: { table: "admin_queens", field: "id" },
-                            on: { table: "admin_products", field: "queen_id" },
+                            join: { table: 'admin_queens', field: 'id' },
+                            on: { table: 'admin_products', field: 'queen_id' },
                         },
                     ],
-                    where: { table: "admin_products", field: "id", value: data.insertId },
+                    where: { table: 'admin_products', field: 'id', value: data.insertId },
                 });
                 return { success: true, data: response[0] };
             }));
@@ -82,7 +82,7 @@ class ProductServices extends abstractServices_1.default {
                 const product_picture_1 = reqFiles[0] && reqFiles[0];
                 const product_picture_2 = reqFiles[1] && reqFiles[1];
                 if (product_picture_1) {
-                    if (product_picture_1.fieldname === "product_picture_1") {
+                    if (product_picture_1.fieldname === 'product_picture_1') {
                         req.body.product_picture_1 = product_picture_1.filename;
                     }
                     else {
@@ -93,36 +93,36 @@ class ProductServices extends abstractServices_1.default {
                     req.body.product_picture_2 = product_picture_2.filename;
                 }
                 const data = yield query.select({
-                    table: "update_products",
+                    table: 'update_products',
                     fields: {
-                        columns: ["product_id", "product_picture_1", "product_picture_2"],
+                        columns: ['product_id', 'product_picture_1', 'product_picture_2'],
                     },
-                    where: { table: "update_products", field: "product_id", value: id },
+                    where: { table: 'update_products', field: 'product_id', value: id },
                 });
                 if (data.length) {
                     console.log(req.body);
                     const result = yield query.update({
-                        table: "update_products",
+                        table: 'update_products',
                         data: req.body,
                         where: { product_id: id },
                     });
                     if (result.affectedRows) {
                         if (req.body.product_picture_1 && data[0].product_picture_1) {
-                            this.deleteFile.delete("products", data[0].product_picture_1);
+                            this.deleteFile.delete('products', data[0].product_picture_1);
                         }
                         if (req.body.product_picture_2 && data[0].product_picture_2) {
-                            this.deleteFile.delete("products", data[0].product_picture_2);
+                            this.deleteFile.delete('products', data[0].product_picture_2);
                         }
                     }
                 }
                 else {
                     req.body.product_id = id;
-                    const result = yield query.insert("update_products", req.body);
+                    const result = yield query.insert('update_products', req.body);
                 }
                 return {
                     success: true,
                     data: Object.assign(Object.assign({}, req.body), { product_id: id }),
-                    message: "Product update request send successfully!",
+                    message: 'Product update request send successfully!',
                 };
             }));
         });
@@ -133,8 +133,8 @@ class ProductServices extends abstractServices_1.default {
     getAllApprovedProducts(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const { limit, skip } = req.query;
-            const sql = `SELECT admin_products.id, admin_products.delivery_day, admin_products.product_name, admin_products.product_picture_1, admin_products.price, admin_products.stock_status, admin_queens.name as queen_name,admin_queens.id as queen_id, round (avg(rating.rating),1) as rating FROM rrf.admin_products join rrf.admin_queens on admin_queens.id=admin_products.queen_id left join rrf.rating on admin_products.id = rating.product where admin_products.status='approved' group by admin_products.id order by admin_products.upload_date desc limit ? offset ? `;
-            const totalSql = `SELECT count(admin_products.id) as total FROM rrf.admin_products where admin_products.status = 'Approved'`;
+            const sql = `SELECT admin_products.id, admin_products.delivery_day, admin_products.product_name, admin_products.product_picture_1, admin_products.price, admin_products.stock_status, admin_queens.name as queen_name,admin_queens.id as queen_id, round (avg(rating.rating),1) as rating FROM rrf_ecommerce.admin_products join rrf_ecommerce.admin_queens on admin_queens.id=admin_products.queen_id left join rrf_ecommerce.rating on admin_products.id = rating.product where admin_products.status='approved' group by admin_products.id order by admin_products.upload_date desc limit ? offset ? `;
+            const totalSql = `SELECT count(admin_products.id) as total FROM rrf_ecommerce.admin_products where admin_products.status = 'Approved'`;
             const data = yield this.query.rawQuery(sql, [Number(limit), Number(skip)]);
             const total = (yield this.query.rawQuery(totalSql, []));
             return { success: true, data, total: total[0].total };

@@ -1,7 +1,7 @@
-import DbAccess from "../dataAccess/dbAccess";
-import { Pool, RowDataPacket, ResultSetHeader } from "mysql2/promise";
-import { PoolConnection } from "mysql2/promise";
-import Lib from "../utils/libraries/lib";
+import DbAccess from '../dataAccess/dbAccess';
+import { Pool, RowDataPacket, ResultSetHeader } from 'mysql2/promise';
+import { PoolConnection } from 'mysql2/promise';
+import Lib from '../utils/libraries/lib';
 import {
   TCompare,
   TCredType,
@@ -10,7 +10,7 @@ import {
   TResultSetHeader,
   TRowDataPacket,
   TWhere,
-} from "../utils/commonTypes/types";
+} from '../utils/commonTypes/types';
 
 type TGetOtp = {
   fields: string[];
@@ -71,7 +71,7 @@ class Queries {
     table: string,
     body: object
   ): Promise<ResultSetHeader> => {
-    const sql = "INSERT INTO ?? SET ?";
+    const sql = 'INSERT INTO ?? SET ?';
 
     const [data] = (await this.connection.query({
       sql,
@@ -89,7 +89,7 @@ class Queries {
     fields: string[],
     values: any[]
   ): Promise<ResultSetHeader> => {
-    const sql = "INSERT INTO ?? (??) VALUES ?";
+    const sql = 'INSERT INTO ?? (??) VALUES ?';
 
     const [data] = (await this.connection.query({
       sql,
@@ -115,7 +115,7 @@ class Queries {
       }
     }
 
-    let join: string = "";
+    let join: string = '';
 
     if (creds.join) {
       for (let i = 0; i < creds.join.length; i++) {
@@ -130,22 +130,22 @@ class Queries {
       }
     }
 
-    let where: string = "";
+    let where: string = '';
     const and = (creds.where as TWhere)?.and;
     const or = (creds.where as TWhere)?.or;
 
     if (creds.where) {
       if (and && or) {
-        throw new Error("Currently cannot have both AND and OR operator");
+        throw new Error('Currently cannot have both AND and OR operator');
       } else if (and || or) {
-        where = "WHERE";
+        where = 'WHERE';
 
         if (and) {
           for (let i = 0; i < and.length; i++) {
             const element = and[i];
-            const andKey = and.length - 1 > i ? "AND" : "";
+            const andKey = and.length - 1 > i ? 'AND' : '';
             where += ` ${element.table}.${element.field} ${
-              element.compare || "="
+              element.compare || '='
             } ${element.value} ${andKey}`;
           }
         }
@@ -153,9 +153,9 @@ class Queries {
         if (or) {
           for (let i = 0; i < or.length; i++) {
             const element = or[i];
-            const orKey = or.length - 1 > i ? "OR" : "";
+            const orKey = or.length - 1 > i ? 'OR' : '';
             where += ` ${element.table}.${element.field} ${
-              element.compare || "="
+              element.compare || '='
             } ${element.value} ${orKey}`;
           }
         }
@@ -169,7 +169,7 @@ class Queries {
         };
         where = `WHERE ${
           tw.date ? `date(${tw.table}.${tw.field})` : `${tw.table}.${tw.field}`
-        }  ${tw.compare || "="} ${tw.value}`;
+        }  ${tw.compare || '='} ${tw.value}`;
       }
     }
 
@@ -197,24 +197,24 @@ class Queries {
       }
     }
 
-    const all = creds.all ? "*" : "";
-    const special = creds.special ? creds.special + "," : "";
+    const all = creds.all ? '*' : '';
+    const special = creds.special ? creds.special + ',' : '';
     const limit = creds.limit
       ? `LIMIT ${creds.limit.skip},${creds.limit.limit}`
-      : "";
-    const as = asFields.length >= 1 ? `${asFields},` : "";
-    const joinStr = join ? join : "";
+      : '';
+    const as = asFields.length >= 1 ? `${asFields},` : '';
+    const joinStr = join ? join : '';
     const orderBy = creds.orderBy
       ? `ORDER BY ${creds.orderBy.table}.${creds.orderBy.field}`
-      : "";
+      : '';
     const groupBy = creds.groupBy
       ? `GROUP BY ${creds.groupBy.table}.${creds.groupBy.field}`
-      : "";
-    const asc = creds.asc ? "ASC" : "";
-    const desc = creds.desc ? "DESC" : "";
+      : '';
+    const asc = creds.asc ? 'ASC' : '';
+    const desc = creds.desc ? 'DESC' : '';
 
     const sql = `SELECT ${special} ${as} ${
-      all || "??"
+      all || '??'
     } FROM ?? ${joinStr} ${where} ${orderBy} ${asc} ${desc} ${groupBy} ${limit}`;
 
     const dts: (string | string[] | object)[] = [creds.table];
@@ -251,14 +251,14 @@ class Queries {
    * update
    */
   public update = async (obj: TUpCred): Promise<ResultSetHeader> => {
-    let where = "UPDATE ?? SET ? WHERE ?";
+    let where = 'UPDATE ?? SET ? WHERE ?';
     let values = [obj.table, obj.data, obj.where];
 
     if (obj.and) {
-      where = "UPDATE ?? SET ? WHERE ";
+      where = 'UPDATE ?? SET ? WHERE ';
       for (let i = 0; i < obj.and.length; i++) {
         const element = obj.and[i];
-        const andKey = obj.and.length - 1 > i ? "AND" : "";
+        const andKey = obj.and.length - 1 > i ? 'AND' : '';
         where += ` ${element.table}.${element.field} = ${element.value} ${andKey}`;
       }
       values = [obj.table, obj.data];
@@ -281,8 +281,8 @@ class Queries {
     console.log({ select });
 
     const sql = select
-      ? "REPLACE INTO ?? (??) SELECT ?? FROM ?? WHERE ?"
-      : "REPLACE INTO ?? SET ?";
+      ? 'REPLACE INTO ?? (??) SELECT ?? FROM ?? WHERE ?'
+      : 'REPLACE INTO ?? SET ?';
 
     const values = select
       ? [into, replace, select, from, where]
@@ -300,21 +300,21 @@ class Queries {
    * delete
    */
   public delete = async (obj: TDelCred): Promise<ResultSetHeader> => {
-    let sql = "DELETE FROM ?? WHERE ?";
+    let sql = 'DELETE FROM ?? WHERE ?';
     const and = obj.and;
 
-    let where = "";
+    let where = '';
 
     if (and) {
       for (let i = 0; i < and.length; i++) {
         const element = and[i];
-        const andKey = and.length - 1 > i ? "AND" : "";
+        const andKey = and.length - 1 > i ? 'AND' : '';
         where += ` ${element.field} = ${element.value} ${andKey}`;
       }
       sql = `DELETE FROM ?? WHERE ${where}`;
     }
 
-    const values = [obj.table, obj.and ? "" : obj.where];
+    const values = [obj.table, obj.and ? '' : obj.where];
     const [data] = (await this.connection.query({
       sql,
       values,
@@ -327,7 +327,7 @@ class Queries {
    */
   public cronDeleteOTP = async () => {
     const qStr =
-      "DELETE FROM otp WHERE create_time < DATE_SUB(NOW(), INTERVAL 10 MINUTE)";
+      'DELETE FROM otp WHERE create_time < DATE_SUB(NOW(), INTERVAL 10 MINUTE)';
     await this.connection.query({ sql: qStr });
   };
 
@@ -336,7 +336,7 @@ class Queries {
    */
   public cronDeleteNoti = async () => {
     const qStr =
-      "DELETE FROM rrf.notifications WHERE notifications.date < date_sub(now(),interval 7 day) AND notifications.status = 'read'";
+      "DELETE FROM rrf_ecommerce.notifications WHERE notifications.date < date_sub(now(),interval 7 day) AND notifications.status = 'read'";
     await this.connection.query({ sql: qStr });
   };
 
@@ -372,7 +372,7 @@ class Queries {
       await this.connection.beginTransaction();
     } else {
       throw new Error(
-        "Cannot start transaction on a Pool. For transaction, use PoolConnection"
+        'Cannot start transaction on a Pool. For transaction, use PoolConnection'
       );
     }
   };
@@ -385,7 +385,7 @@ class Queries {
       await this.connection.rollback();
       this.connection.release();
     } else {
-      throw new Error("Cannot rollback Pool. To rollback, use PoolConnection");
+      throw new Error('Cannot rollback Pool. To rollback, use PoolConnection');
     }
   };
 
@@ -397,7 +397,7 @@ class Queries {
       await this.connection.commit();
       this.connection.release();
     } else {
-      throw new Error("Cannot commit Pool. To commit, use PoolConnection");
+      throw new Error('Cannot commit Pool. To commit, use PoolConnection');
     }
   };
 }

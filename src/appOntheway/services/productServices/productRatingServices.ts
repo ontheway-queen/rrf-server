@@ -1,6 +1,6 @@
-import { Request } from "express";
-import { RowDataPacket } from "mysql2";
-import AbstractServices from "../../../abstracts/abstractServices";
+import { Request } from 'express';
+import { RowDataPacket } from 'mysql2';
+import AbstractServices from '../../../abstracts/abstractServices';
 
 class productRatingServices extends AbstractServices {
   constructor() {
@@ -16,12 +16,12 @@ class productRatingServices extends AbstractServices {
     const ratingData = { ...req.body, rating_pic1, rating_pic2, rating_pic3 };
 
     const check = await this.query.select({
-      table: "rating",
-      fields: { columns: ["id"] },
+      table: 'rating',
+      fields: { columns: ['id'] },
       where: {
         and: [
-          { table: "rating", field: "product", value: ratingData.product },
-          { table: "rating", field: "rater", value: ratingData.rater },
+          { table: 'rating', field: 'product', value: ratingData.product },
+          { table: 'rating', field: 'rater', value: ratingData.rater },
         ],
       },
     });
@@ -29,11 +29,11 @@ class productRatingServices extends AbstractServices {
     if (check.length) {
       return {
         success: false,
-        msg: "User Already added review to this product",
+        msg: 'User Already added review to this product',
       };
     } else {
-      await this.query.insert("rating", ratingData);
-      return { success: true, msg: "Review added successfully" };
+      await this.query.insert('rating', ratingData);
+      return { success: true, msg: 'Review added successfully' };
     }
   }
 
@@ -43,37 +43,37 @@ class productRatingServices extends AbstractServices {
     const { skip, limit } = req.query;
 
     const ratings = await this.query.select({
-      table: "rating",
+      table: 'rating',
       fields: {
         columns: [
-          "id",
-          "comment",
-          "rating",
-          "rating_pic1",
-          "rating_pic2",
-          "rating_pic3",
-          "createdAt",
+          'id',
+          'comment',
+          'rating',
+          'rating_pic1',
+          'rating_pic2',
+          'rating_pic3',
+          'createdAt',
         ],
         otherFields: [
           {
-            table: "customers",
-            as: [["name", "rater_name"]],
+            table: 'customers',
+            as: [['name', 'rater_name']],
           },
         ],
       },
       limit: { limit: limit as string, skip: Number(skip) || 0 },
-      where: { table: "rating", field: "product", value: product },
+      where: { table: 'rating', field: 'product', value: product },
       join: [
         {
-          join: { table: "customers", field: "id" },
-          on: { table: "rating", field: "rater" },
+          join: { table: 'customers', field: 'id' },
+          on: { table: 'rating', field: 'rater' },
         },
       ],
-      orderBy: { table: "rating", field: "createdAt" },
+      orderBy: { table: 'rating', field: 'createdAt' },
       desc: true,
     });
 
-    const sql = `select count(rating.id) as total from rrf.rating where rating.product =  ?`;
+    const sql = `select count(rating.id) as total from rrf_ecommerce.rating where rating.product =  ?`;
 
     const total = await this.query.rawQuery(sql, [product]);
 
@@ -91,32 +91,32 @@ class productRatingServices extends AbstractServices {
     const { rater } = req.params;
 
     const ratings = await this.query.select({
-      table: "rating",
+      table: 'rating',
       fields: {
         columns: [
-          "id",
-          "comment",
-          "rating",
-          "rating_pic1",
-          "rating_pic2",
-          "rating_pic3",
+          'id',
+          'comment',
+          'rating',
+          'rating_pic1',
+          'rating_pic2',
+          'rating_pic3',
         ],
-        as: [["createdAt", "date"]],
+        as: [['createdAt', 'date']],
         otherFields: [
           {
-            table: "admin_products",
+            table: 'admin_products',
             as: [
-              ["id", "product_id"],
-              ["product_name", "product"],
+              ['id', 'product_id'],
+              ['product_name', 'product'],
             ],
           },
         ],
       },
-      where: { table: "rating", field: "rater", value: rater },
+      where: { table: 'rating', field: 'rater', value: rater },
       join: [
         {
-          join: { table: "admin_products", field: "id" },
-          on: { table: "rating", field: "product" },
+          join: { table: 'admin_products', field: 'id' },
+          on: { table: 'rating', field: 'product' },
         },
       ],
     });
@@ -128,14 +128,14 @@ class productRatingServices extends AbstractServices {
   public async deleteRating(req: Request) {
     const { rating } = req.params;
     const result = await this.query.delete({
-      table: "rating",
+      table: 'rating',
       where: { id: rating },
     });
 
     if (result.affectedRows) {
-      return { success: true, msg: "Reting deleted successfully" };
+      return { success: true, msg: 'Reting deleted successfully' };
     } else {
-      return { success: false, msg: "Wrong rating id!" };
+      return { success: false, msg: 'Wrong rating id!' };
     }
   }
 
@@ -143,14 +143,14 @@ class productRatingServices extends AbstractServices {
   public async checkRatingOfCustomer(req: Request) {
     const { product, customer } = req.params;
     const result = await this.query.select({
-      table: "rating",
+      table: 'rating',
       fields: {
-        columns: ["id"],
+        columns: ['id'],
       },
       where: {
         and: [
-          { table: "rating", field: "rater", value: customer },
-          { table: "rating", field: "product", value: product },
+          { table: 'rating', field: 'rater', value: customer },
+          { table: 'rating', field: 'product', value: product },
         ],
       },
     });

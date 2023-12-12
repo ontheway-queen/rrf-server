@@ -1,8 +1,8 @@
-import { Request } from "express";
-import { RowDataPacket } from "mysql2";
-import AbstractServices from "../../../abstracts/abstractServices";
-import CustomError from "../../../common/utils/errors/customError";
-import Lib from "../../../common/utils/libraries/lib";
+import { Request } from 'express';
+import { RowDataPacket } from 'mysql2';
+import AbstractServices from '../../../abstracts/abstractServices';
+import CustomError from '../../../common/utils/errors/customError';
+import Lib from '../../../common/utils/libraries/lib';
 
 type UserCreate = {
   name: string;
@@ -26,16 +26,16 @@ class CustomerServices extends AbstractServices {
     const { name, phone, password: bodyPass, address } = body;
     return await this.transaction.beginTransaction(async (query) => {
       const user = await query.select({
-        table: "customers",
-        fields: { columns: ["phone", "photo", "id"] },
-        where: { table: "customers", field: "phone", value: phone },
+        table: 'customers',
+        fields: { columns: ['phone', 'photo', 'id'] },
+        where: { table: 'customers', field: 'phone', value: phone },
       });
 
       const hashedPass = await Lib.hashPass(bodyPass);
       let data;
       if (user.length) {
         await query.update({
-          table: "customers",
+          table: 'customers',
           data: {
             ...body,
             guest: 0,
@@ -44,7 +44,7 @@ class CustomerServices extends AbstractServices {
           where: { id: user[0].id },
         });
       } else {
-        data = await query.insert("customers", {
+        data = await query.insert('customers', {
           ...body,
           guest: 0,
           password: hashedPass,
@@ -69,13 +69,13 @@ class CustomerServices extends AbstractServices {
   public async getAllCustomers(req: Request) {
     const { limit, skip } = req.query;
     const data = await this.query.select({
-      table: "customers",
-      fields: { columns: ["id", "name", "photo", "phone", "address"] },
+      table: 'customers',
+      fields: { columns: ['id', 'name', 'photo', 'phone', 'address'] },
       limit: { limit: limit as string, skip: skip as string },
     });
 
     const forCount =
-      "SELECT count(rrf.customers.id) as total FROM rrf.customers";
+      'SELECT count(rrf_ecommerce.customers.id) as total FROM rrf_ecommerce.customers';
 
     const total = (await this.query.rawQuery(forCount)) as RowDataPacket[];
     console.log({ total });
@@ -90,24 +90,24 @@ class CustomerServices extends AbstractServices {
     const { id } = req.params;
     const { phone } = req.params;
 
-    const finder = id ? ["id", id] : ["phone", phone];
+    const finder = id ? ['id', id] : ['phone', phone];
 
     const columns = [
-      "id",
-      "name",
-      "phone",
-      "address",
-      "email",
-      "post_code",
-      "photo",
-      "city",
-      "guest",
+      'id',
+      'name',
+      'phone',
+      'address',
+      'email',
+      'post_code',
+      'photo',
+      'city',
+      'guest',
     ];
 
     const data = await this.query.select({
-      table: "customers",
+      table: 'customers',
       fields: { columns },
-      where: { table: "customers", field: finder[0], value: finder[1] },
+      where: { table: 'customers', field: finder[0], value: finder[1] },
     });
 
     if (data.length) {
@@ -115,7 +115,7 @@ class CustomerServices extends AbstractServices {
     } else {
       return {
         success: false,
-        message: "No data found with this Phone",
+        message: 'No data found with this Phone',
       };
     }
   }
@@ -129,20 +129,20 @@ class CustomerServices extends AbstractServices {
 
     return await this.transaction.beginTransaction(async (query) => {
       const data = await query.select({
-        table: "customers",
-        fields: { columns: ["phone", "photo"] },
-        where: { table: "customers", field: "id", value: id },
+        table: 'customers',
+        fields: { columns: ['phone', 'photo'] },
+        where: { table: 'customers', field: 'id', value: id },
       });
 
       if (data.length < 1) {
-        filename && this.deleteFile.delete("customers", filename);
-        throw new CustomError("Use does not exist!!", 400, "Bad request");
+        filename && this.deleteFile.delete('customers', filename);
+        throw new CustomError('Use does not exist!!', 400, 'Bad request');
       } else {
         const updateData = filename
           ? { ...req.body, photo: filename }
           : req.body;
         await query.update({
-          table: "customers",
+          table: 'customers',
           data: updateData,
           where: { id },
         });
@@ -162,14 +162,14 @@ class CustomerServices extends AbstractServices {
           buyerBody = { ...buyerBody, email: req.body.email };
         }
 
-        oldPhoto && this.deleteFile.delete("customers", oldPhoto);
+        oldPhoto && this.deleteFile.delete('customers', oldPhoto);
       }
 
       return {
         success: true,
         data: {
           photo: filename,
-          message: "User successfully updated",
+          message: 'User successfully updated',
         },
       };
     });
@@ -182,17 +182,17 @@ class CustomerServices extends AbstractServices {
     const { id } = req.params;
 
     const data = await this.query.update({
-      table: "customers",
+      table: 'customers',
       data: { is_deleted: 1 },
       where: { id },
     });
 
     if (data) {
-      return { success: true, message: "Successfully deleted the Customer" };
+      return { success: true, message: 'Successfully deleted the Customer' };
     } else {
       return {
         success: false,
-        message: "No data found with this Phone",
+        message: 'No data found with this Phone',
       };
     }
   }

@@ -1,7 +1,7 @@
-import { Request } from "express";
-import { ResultSetHeader } from "mysql";
-import { RowDataPacket } from "mysql2/promise";
-import AbstractServices from "../../../abstracts/abstractServices";
+import { Request } from 'express';
+import { ResultSetHeader } from 'mysql';
+import { RowDataPacket } from 'mysql2/promise';
+import AbstractServices from '../../../abstracts/abstractServices';
 
 class notificationServices extends AbstractServices {
   constructor() {
@@ -14,89 +14,89 @@ class notificationServices extends AbstractServices {
     type: string,
     body: { msg: string; update_id?: number | string }
   ) => {
-    if (type.startsWith("new")) {
+    if (type.startsWith('new')) {
       const item: RowDataPacket[] = await this.query.select({
-        table: "notifications",
-        fields: { columns: ["id", "status", "count"] },
-        where: { table: "notifications", field: "type", value: `'${type}'` },
+        table: 'notifications',
+        fields: { columns: ['id', 'status', 'count'] },
+        where: { table: 'notifications', field: 'type', value: `'${type}'` },
       });
 
       if (item.length) {
         let updated: ResultSetHeader;
-        if (item[0].status === "unread") {
+        if (item[0].status === 'unread') {
           updated = await this.query.update({
-            table: "notifications",
+            table: 'notifications',
             data: { count: item[0].count + 1 },
             where: { id: item[0].id },
           });
         } else {
           updated = await this.query.update({
-            table: "notifications",
-            data: { status: "unread", count: 1 },
+            table: 'notifications',
+            data: { status: 'unread', count: 1 },
             where: { id: item[0].id },
           });
         }
 
         const notification = await this.query.select({
-          table: "notifications",
+          table: 'notifications',
           fields: {
-            columns: ["id", "count", "type", "msg", "status", "update_id"],
-            as: [["date", "time"]],
+            columns: ['id', 'count', 'type', 'msg', 'status', 'update_id'],
+            as: [['date', 'time']],
           },
-          where: { table: "notifications", field: "id", value: item[0].id },
+          where: { table: 'notifications', field: 'id', value: item[0].id },
         });
 
         return notification[0];
       } else {
-        const data = await this.query.insert("notifications", {
+        const data = await this.query.insert('notifications', {
           ...body,
           type,
           count: 1,
         });
 
         const notification = await this.query.select({
-          table: "notifications",
+          table: 'notifications',
           fields: {
-            columns: ["id", "count", "type", "msg", "status", "update_id"],
-            as: [["date", "time"]],
+            columns: ['id', 'count', 'type', 'msg', 'status', 'update_id'],
+            as: [['date', 'time']],
           },
-          where: { table: "notifications", field: "id", value: data.insertId },
+          where: { table: 'notifications', field: 'id', value: data.insertId },
         });
 
         return notification[0];
       }
     } else {
       const updated = await this.query.select({
-        table: "notifications",
-        fields: { columns: ["id"] },
+        table: 'notifications',
+        fields: { columns: ['id'] },
         where: {
-          table: "notifications",
-          field: "update_id",
+          table: 'notifications',
+          field: 'update_id',
           value: body.update_id as string,
         },
       });
 
       if (updated.length) {
         await this.query.update({
-          table: "notifications",
-          data: { status: "unread", msg: body.msg },
+          table: 'notifications',
+          data: { status: 'unread', msg: body.msg },
           where: { id: updated[0].id },
         });
       } else {
-        await this.query.insert("notifications", {
+        await this.query.insert('notifications', {
           ...body,
           type,
         });
       }
       const notification = await this.query.select({
-        table: "notifications",
+        table: 'notifications',
         fields: {
-          columns: ["id", "count", "type", "msg", "status", "update_id"],
-          as: [["date", "time"]],
+          columns: ['id', 'count', 'type', 'msg', 'status', 'update_id'],
+          as: [['date', 'time']],
         },
         where: {
-          table: "notifications",
-          field: "update_id",
+          table: 'notifications',
+          field: 'update_id',
           value: body.update_id as string,
         },
       });
@@ -109,12 +109,12 @@ class notificationServices extends AbstractServices {
 
   public getAllNotification = async () => {
     const notifications = await this.query.select({
-      table: "notifications",
+      table: 'notifications',
       fields: {
-        columns: ["id", "count", "type", "msg", "status", "update_id"],
-        as: [["date", "time"]],
+        columns: ['id', 'count', 'type', 'msg', 'status', 'update_id'],
+        as: [['date', 'time']],
       },
-      orderBy: { table: "notifications", field: "date" },
+      orderBy: { table: 'notifications', field: 'date' },
       desc: true,
     });
 
@@ -127,13 +127,13 @@ class notificationServices extends AbstractServices {
     const { id } = req.body;
 
     const result = await this.query.update({
-      table: "notifications",
-      data: { status: "read" },
+      table: 'notifications',
+      data: { status: 'read' },
       where: { id },
     });
 
     if (result.affectedRows) {
-      return { success: true, msg: "Notification read successfully" };
+      return { success: true, msg: 'Notification read successfully' };
     } else {
       return { success: false };
     }
@@ -141,11 +141,11 @@ class notificationServices extends AbstractServices {
 
   // delete all notification
   public clearNotifications = async () => {
-    const sql: string = `DELETE FROM rrf.notifications`;
+    const sql: string = `DELETE FROM rrf_ecommerce.notifications`;
     const result = (await this.query.rawQuery(sql)) as RowDataPacket;
 
     if (result.affectedRows) {
-      return { success: true, msg: "Notifications clear successfully" };
+      return { success: true, msg: 'Notifications clear successfully' };
     } else {
       return { success: false };
     }

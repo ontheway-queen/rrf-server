@@ -30,13 +30,13 @@ class AdminProductServices extends abstractServices_1.default {
                 const firstProduct = reqFiles[0] && reqFiles[0].fieldname;
                 const secondProduct = reqFiles[1] && reqFiles[1].fieldname;
                 const updatedImgs = {};
-                if (firstProduct === "product_picture_1") {
+                if (firstProduct === 'product_picture_1') {
                     updatedImgs.product_picture_1 = product_picture_1;
                 }
-                else if (firstProduct === "product_picture_2") {
+                else if (firstProduct === 'product_picture_2') {
                     updatedImgs.product_picture_2 = product_picture_1;
                 }
-                if (secondProduct === "product_picture_2") {
+                if (secondProduct === 'product_picture_2') {
                     updatedImgs.product_picture_2 = product_picture_2;
                 }
                 const fieldsName = [];
@@ -56,59 +56,59 @@ class AdminProductServices extends abstractServices_1.default {
                     tags,
                     weight,
                 };
-                if (fieldsName.includes("product_picture_1")) {
+                if (fieldsName.includes('product_picture_1')) {
                     productInfo.product_picture_1 = product_picture_1;
-                    this.deleteFile.delete("products", req.body.prev_1);
+                    this.deleteFile.delete('products', req.body.prev_1);
                 }
-                if (fieldsName.includes("product_picture_2")) {
+                if (fieldsName.includes('product_picture_2')) {
                     productInfo.product_picture_2 = product_picture_2 || product_picture_1;
-                    this.deleteFile.delete("products", req.body.prev_2);
+                    this.deleteFile.delete('products', req.body.prev_2);
                 }
                 yield query.update({
-                    table: "admin_products",
+                    table: 'admin_products',
                     data: productInfo,
                     where: { id },
                 });
                 const repVals = [
-                    "queen_id",
-                    "product_name",
-                    "category",
-                    "product_picture_1",
-                    "product_picture_2",
-                    "delivery_day",
-                    "short_desc",
-                    "price",
-                    "tags",
-                    "upload_date",
-                    "stock_status",
-                    "weight",
+                    'queen_id',
+                    'product_name',
+                    'category',
+                    'product_picture_1',
+                    'product_picture_2',
+                    'delivery_day',
+                    'short_desc',
+                    'price',
+                    'tags',
+                    'upload_date',
+                    'stock_status',
+                    'weight',
                 ];
-                if (req.body.status === "Approved") {
+                if (req.body.status === 'Approved') {
                     yield query.replace({
-                        replace: [...repVals, "admin_products_id"],
-                        into: "products",
-                        select: [...repVals, "id"],
-                        from: "admin_products",
+                        replace: [...repVals, 'admin_products_id'],
+                        into: 'products',
+                        select: [...repVals, 'id'],
+                        from: 'admin_products',
                         where: { id },
                     });
                 }
                 else {
                     yield query.delete({
-                        table: "products",
+                        table: 'products',
                         where: { admin_products_id: id },
                     });
                 }
                 if (updatedImgs.product_picture_1 || updatedImgs.product_picture_2) {
                     return {
                         success: true,
-                        message: "Product Successfully updated",
+                        message: 'Product Successfully updated',
                         updatedImgs,
                     };
                 }
                 else {
                     return {
                         success: true,
-                        message: "Product Successfully updated",
+                        message: 'Product Successfully updated',
                     };
                 }
             }));
@@ -121,23 +121,23 @@ class AdminProductServices extends abstractServices_1.default {
             const { status, category } = req.params;
             let values = [from, to];
             let totalValues = [from, to];
-            let sql = `SELECT admin_products.id, admin_products.status, admin_products.product_name, admin_products.product_picture_1, admin_products.price, admin_products.stock_status, admin_products.category, admin_queens.id as queen_id, admin_queens.name as queen_name FROM rrf.admin_products join rrf.admin_queens on admin_queens.id = admin_products.queen_id where admin_products.upload_date between ? and ? order by upload_date desc `;
-            let totalSql = `SELECT count(admin_products.id) as total FROM rrf.admin_products where admin_products.upload_date between ? and ?`;
-            if (status !== "all") {
+            let sql = `SELECT admin_products.id, admin_products.status, admin_products.product_name, admin_products.product_picture_1, admin_products.price, admin_products.stock_status, admin_products.category, admin_queens.id as queen_id, admin_queens.name as queen_name FROM rrf_ecommerce.admin_products join rrf_ecommerce.admin_queens on admin_queens.id = admin_products.queen_id where admin_products.upload_date between ? and ? order by upload_date desc `;
+            let totalSql = `SELECT count(admin_products.id) as total FROM rrf_ecommerce.admin_products where admin_products.upload_date between ? and ?`;
+            if (status !== 'all') {
                 values = [status, ...values];
                 totalValues.push(status);
-                sql = `SELECT admin_products.id, admin_products.status, admin_products.product_name, admin_products.product_picture_1, admin_products.price, admin_products.stock_status, admin_products.category, admin_queens.id as queen_id, admin_queens.name as queen_name FROM rrf.admin_products join rrf.admin_queens on admin_queens.id = admin_products.queen_id where admin_products.status = ? and admin_products.upload_date between ? and ? order by upload_date desc  `;
-                totalSql = `SELECT count(admin_products.id) as total FROM rrf.admin_products where admin_products.upload_date between ? and ? and admin_products.status = ? `;
+                sql = `SELECT admin_products.id, admin_products.status, admin_products.product_name, admin_products.product_picture_1, admin_products.price, admin_products.stock_status, admin_products.category, admin_queens.id as queen_id, admin_queens.name as queen_name FROM rrf_ecommerce.admin_products join rrf_ecommerce.admin_queens on admin_queens.id = admin_products.queen_id where admin_products.status = ? and admin_products.upload_date between ? and ? order by upload_date desc  `;
+                totalSql = `SELECT count(admin_products.id) as total FROM rrf_ecommerce.admin_products where admin_products.upload_date between ? and ? and admin_products.status = ? `;
             }
-            if (category !== "all") {
+            if (category !== 'all') {
                 values = [category, ...values];
                 totalValues.push(category);
-                sql = `SELECT admin_products.id, admin_products.status, admin_products.product_name, admin_products.product_picture_1, admin_products.price, admin_products.stock_status, admin_products.category, admin_queens.id as queen_id, admin_queens.name as queen_name FROM rrf.admin_products join rrf.admin_queens on admin_queens.id = admin_products.queen_id where admin_products.category = ? and admin_products.upload_date between ? and ? order by upload_date desc  `;
-                totalSql = `SELECT count(admin_products.id) as total FROM rrf.admin_products where admin_products.upload_date between ? and ? and admin_products.category = ? `;
+                sql = `SELECT admin_products.id, admin_products.status, admin_products.product_name, admin_products.product_picture_1, admin_products.price, admin_products.stock_status, admin_products.category, admin_queens.id as queen_id, admin_queens.name as queen_name FROM rrf_ecommerce.admin_products join rrf_ecommerce.admin_queens on admin_queens.id = admin_products.queen_id where admin_products.category = ? and admin_products.upload_date between ? and ? order by upload_date desc  `;
+                totalSql = `SELECT count(admin_products.id) as total FROM rrf_ecommerce.admin_products where admin_products.upload_date between ? and ? and admin_products.category = ? `;
             }
-            if (category !== "all" && status !== "all") {
-                sql = `SELECT admin_products.id, admin_products.status, admin_products.product_name, admin_products.product_picture_1, admin_products.price, admin_products.stock_status, admin_products.category, admin_queens.id as queen_id, admin_queens.name as queen_name FROM rrf.admin_products join rrf.admin_queens on admin_queens.id = admin_products.queen_id where admin_products.category = ? and admin_products.status = ? and admin_products.upload_date between ? and ? order by upload_date desc  `;
-                totalSql = `SELECT count(admin_products.id) as total FROM rrf.admin_products where admin_products.upload_date between ? and ? and admin_products.status = ? and admin_products.category = ? `;
+            if (category !== 'all' && status !== 'all') {
+                sql = `SELECT admin_products.id, admin_products.status, admin_products.product_name, admin_products.product_picture_1, admin_products.price, admin_products.stock_status, admin_products.category, admin_queens.id as queen_id, admin_queens.name as queen_name FROM rrf_ecommerce.admin_products join rrf_ecommerce.admin_queens on admin_queens.id = admin_products.queen_id where admin_products.category = ? and admin_products.status = ? and admin_products.upload_date between ? and ? order by upload_date desc  `;
+                totalSql = `SELECT count(admin_products.id) as total FROM rrf_ecommerce.admin_products where admin_products.upload_date between ? and ? and admin_products.status = ? and admin_products.category = ? `;
             }
             const data = yield this.query.rawQuery(sql, values);
             const total = (yield this.query.rawQuery(totalSql, totalValues));
@@ -154,23 +154,23 @@ class AdminProductServices extends abstractServices_1.default {
             return this.transaction.beginTransaction((query) => __awaiter(this, void 0, void 0, function* () {
                 const { id } = req.params;
                 const [data] = yield query.select({
-                    table: "update_products",
+                    table: 'update_products',
                     fields: {
                         columns: [
-                            "product_name",
-                            "category",
-                            "product_picture_1",
-                            "product_picture_2",
-                            "price",
-                            "delivery_day",
-                            "short_desc",
-                            "tags",
-                            "delivery_charge",
-                            "stock_status",
-                            "weight",
+                            'product_name',
+                            'category',
+                            'product_picture_1',
+                            'product_picture_2',
+                            'price',
+                            'delivery_day',
+                            'short_desc',
+                            'tags',
+                            'delivery_charge',
+                            'stock_status',
+                            'weight',
                         ],
                     },
-                    where: { table: "update_products", field: "product_id", value: id },
+                    where: { table: 'update_products', field: 'product_id', value: id },
                 });
                 if (data === null || data === void 0 ? void 0 : data.product_name) {
                     Object.keys(data).forEach((item) => {
@@ -179,44 +179,44 @@ class AdminProductServices extends abstractServices_1.default {
                         }
                     });
                     const product = yield query.select({
-                        table: "admin_products",
+                        table: 'admin_products',
                         fields: {
-                            columns: ["status", "product_picture_2", "product_picture_1"],
+                            columns: ['status', 'product_picture_2', 'product_picture_1'],
                         },
-                        where: { table: "admin_products", field: "id", value: id },
+                        where: { table: 'admin_products', field: 'id', value: id },
                     });
                     const { status, product_picture_1: prev_1, product_picture_2: prev_2, } = product[0] || {};
                     yield query.update({
-                        table: "admin_products",
+                        table: 'admin_products',
                         data,
                         where: { id },
                     });
-                    if (status === "Approved") {
+                    if (status === 'Approved') {
                         yield query.update({
-                            table: "products",
+                            table: 'products',
                             data,
                             where: { admin_products_id: id },
                         });
                     }
                     if (data.product_picture_1) {
-                        this.deleteFile.delete("products", prev_1);
+                        this.deleteFile.delete('products', prev_1);
                     }
                     if (data.product_picture_2) {
-                        this.deleteFile.delete("products", prev_2);
+                        this.deleteFile.delete('products', prev_2);
                     }
                     yield query.delete({
-                        table: "update_products",
+                        table: 'update_products',
                         where: { product_id: id },
                     });
                     return {
                         success: true,
-                        message: "Product update approved successfully!",
+                        message: 'Product update approved successfully!',
                     };
                 }
                 else {
                     return {
                         success: false,
-                        message: "No update pending product with this id",
+                        message: 'No update pending product with this id',
                     };
                 }
             }));
@@ -228,22 +228,22 @@ class AdminProductServices extends abstractServices_1.default {
             const { id } = req.params;
             const { product_picture_1, product_picture_2 } = req.body;
             yield this.query.delete({
-                table: "update_products",
+                table: 'update_products',
                 where: { product_id: id },
             });
             if (product_picture_1) {
-                this.deleteFile.delete("products", product_picture_1);
+                this.deleteFile.delete('products', product_picture_1);
             }
             if (product_picture_2) {
-                this.deleteFile.delete("products", product_picture_2);
+                this.deleteFile.delete('products', product_picture_2);
             }
-            return { success: true, message: "Update Product rejected successfully" };
+            return { success: true, message: 'Update Product rejected successfully' };
         });
     }
     // get all pending update product
     getAllPendingUpdateProduct(_req) {
         return __awaiter(this, void 0, void 0, function* () {
-            const data = (yield this.query.rawQuery("SELECT * FROM rrf.update_products"));
+            const data = (yield this.query.rawQuery('SELECT * FROM rrf_ecommerce.update_products'));
             return { success: true, data, total: data.length };
         });
     }
@@ -251,7 +251,7 @@ class AdminProductServices extends abstractServices_1.default {
     getAllPendingUpdateProductOfQueen(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const data = yield this.query.rawQuery("SELECT * FROM rrf.update_products WHERE update_products.queen_id= ?", [id]);
+            const data = yield this.query.rawQuery('SELECT * FROM rrf_ecommerce.update_products WHERE update_products.queen_id= ?', [id]);
             return { success: true, data };
         });
     }
@@ -259,12 +259,12 @@ class AdminProductServices extends abstractServices_1.default {
     getASingleProductUpdate(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const data = (yield this.query.rawQuery("SELECT * FROM rrf.update_products WHERE update_products.product_id= ?", [id]));
+            const data = (yield this.query.rawQuery('SELECT * FROM rrf_ecommerce.update_products WHERE update_products.product_id= ?', [id]));
             if (data.length) {
                 return { success: true, data: data[0] };
             }
             else {
-                return { success: true, message: "No pending request of this product" };
+                return { success: true, message: 'No pending request of this product' };
             }
         });
     }

@@ -18,31 +18,31 @@ const customError_1 = __importDefault(require("../../../common/utils/errors/cust
 class SendOtp {
     constructor(obj) {
         this.sendOtp = () => __awaiter(this, void 0, void 0, function* () {
-            const fields = ["id", "hashed_otp", "tried"];
+            const fields = ['id', 'hashed_otp', 'tried'];
             const data = yield this.query.getOtp({
                 fields,
-                table: "otp",
+                table: 'otp',
                 phone: this.phone,
                 type: this.type,
             });
             if (data.length > 0) {
-                throw new customError_1.default("Cannot send another OTP within 2 minutes", 400, "Limited OTP");
+                throw new customError_1.default('Cannot send another OTP within 2 minutes', 400, 'Limited OTP');
             }
             else {
                 const otp = lib_1.default.otpGen();
                 const hashed_otp = yield lib_1.default.hashPass(otp);
                 let message;
-                if (this.type === "forget") {
-                    message = `${otp} - is the OTP to reset your password. Thank you for being with rrf. https://onthe-way.com`;
+                if (this.type === 'forget') {
+                    message = `${otp} - is the OTP to reset your password. Thank you for being with rrf_ecommerce. https://onthe-way.com`;
                 }
-                else if (this.type === "register") {
-                    message = `${otp} - is the OTP to register your account. Thank you for being with rrf. https://onthe-way.com`;
+                else if (this.type === 'register') {
+                    message = `${otp} - is the OTP to register your account. Thank you for being with rrf_ecommerce. https://onthe-way.com`;
                 }
-                else if (this.type === "order") {
-                    message = `Your OTP is - ${otp}. Thank you for being with rrf. https://onthe-way.com`;
+                else if (this.type === 'order') {
+                    message = `Your OTP is - ${otp}. Thank you for being with rrf_ecommerce. https://onthe-way.com`;
                 }
                 else {
-                    throw new customError_1.default("Please select a valid OTP type eg. (forget | register | order)", 400, "Invalid OTP");
+                    throw new customError_1.default('Please select a valid OTP type eg. (forget | register | order)', 400, 'Invalid OTP');
                 }
                 const otp_creds = {
                     hashed_otp,
@@ -50,12 +50,12 @@ class SendOtp {
                     type: this.type,
                 };
                 const sent = yield lib_1.default.sendSms(Number(this.phone), message);
-                yield this.query.insert("otp", otp_creds);
+                yield this.query.insert('otp', otp_creds);
                 if (sent) {
-                    return { success: true, message: "OTP sent successfully" };
+                    return { success: true, message: 'OTP sent successfully' };
                 }
                 else {
-                    return { success: false, message: "Cannot send OTP" };
+                    return { success: false, message: 'Cannot send OTP' };
                 }
             }
         });

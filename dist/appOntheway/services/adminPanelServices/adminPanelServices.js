@@ -34,128 +34,128 @@ class AdminPanelServices extends abstractServices_1.default {
             const { part, type } = req.params;
             const { search } = req.query;
             let column = [];
-            let table = "";
-            let searchField = "";
+            let table = '';
+            let searchField = '';
             switch (part) {
-                case "queens":
-                    column = ["id", "name", "status", "phone", "photo", "note"];
-                    table = "admin_queens";
-                    searchField = "name";
+                case 'queens':
+                    column = ['id', 'name', 'status', 'phone', 'photo', 'note'];
+                    table = 'admin_queens';
+                    searchField = 'name';
                     break;
-                case "products":
+                case 'products':
                     column = [
-                        "id",
-                        "product_name",
-                        "price",
-                        "product_picture_1",
-                        "status",
-                        "category",
-                        "queen_id",
+                        'id',
+                        'product_name',
+                        'price',
+                        'product_picture_1',
+                        'status',
+                        'category',
+                        'queen_id',
                     ];
-                    table = "admin_products";
-                    searchField = "product_name";
+                    table = 'admin_products';
+                    searchField = 'product_name';
                     break;
-                case "orders":
-                    column = ["id", "status", "note"];
-                    table = "orders";
+                case 'orders':
+                    column = ['id', 'status', 'note'];
+                    table = 'orders';
                     break;
                 default:
-                    return { success: false, data: "Wrong search part" };
+                    return { success: false, data: 'Wrong search part' };
             }
             let data;
-            if (type === "id" || type === "phone") {
+            if (type === 'id' || type === 'phone') {
                 let query = {
                     table,
-                    fields: { columns: column, as: [["last_update", "reg_at"]] },
+                    fields: { columns: column, as: [['last_update', 'reg_at']] },
                     where: { table, field: type, value: search },
                 };
-                if (part === "orders") {
+                if (part === 'orders') {
                     query = {
                         table,
                         fields: {
                             columns: column,
-                            as: [["order_date", "order_date"]],
+                            as: [['order_date', 'order_date']],
                             otherFields: [
-                                { table: "customers", as: [["name", "customer_name"]] },
+                                { table: 'customers', as: [['name', 'customer_name']] },
                             ],
                         },
                         join: [
                             {
-                                join: { table: "customers", field: "id" },
-                                on: { table: "orders", field: "customer_id" },
+                                join: { table: 'customers', field: 'id' },
+                                on: { table: 'orders', field: 'customer_id' },
                             },
                         ],
                         where: { table, field: type, value: search },
                     };
                 }
-                if (part === "products") {
+                if (part === 'products') {
                     query = {
                         fields: {
                             columns: column,
                             otherFields: [
-                                { table: "admin_queens", as: [["name", "queen_name"]] },
+                                { table: 'admin_queens', as: [['name', 'queen_name']] },
                             ],
                         },
                         table,
                         where: { table, field: type, value: search },
                         join: [
                             {
-                                join: { table: "admin_queens", field: "id" },
-                                on: { table, field: "queen_id" },
+                                join: { table: 'admin_queens', field: 'id' },
+                                on: { table, field: 'queen_id' },
                             },
                         ],
-                        orderBy: { table, field: "upload_date" },
+                        orderBy: { table, field: 'upload_date' },
                         desc: true,
                     };
                 }
                 data = yield this.query.select(query);
             }
-            else if (type === "date") {
+            else if (type === 'date') {
                 data = yield this.query.select({
                     table,
                     fields: {
                         columns: column,
-                        as: [["order_date", "order_date"]],
+                        as: [['order_date', 'order_date']],
                         otherFields: [
-                            { table: "customers", as: [["name", "customer_name"]] },
+                            { table: 'customers', as: [['name', 'customer_name']] },
                         ],
                     },
                     join: [
                         {
-                            join: { table: "customers", field: "id" },
-                            on: { table: "orders", field: "customer_id" },
+                            join: { table: 'customers', field: 'id' },
+                            on: { table: 'orders', field: 'customer_id' },
                         },
                     ],
                     where: {
                         table,
-                        field: "order_date",
+                        field: 'order_date',
                         value: `'${search}'`,
                         date: true,
                     },
                 });
             }
-            else if (type === "name") {
+            else if (type === 'name') {
                 let sql;
-                if (part === "queens") {
+                if (part === 'queens') {
                     sql = `SELECT last_update AS reg_at, ?? FROM ?? WHERE MATCH (??) AGAINST (?)`;
                 }
                 else {
                     column = [
-                        "admin_products.id",
-                        "admin_products.product_name",
-                        "admin_products.price",
-                        "admin_products.product_picture_1",
-                        "admin_products.status",
-                        "admin_products.category",
-                        "admin_products.queen_id",
+                        'admin_products.id',
+                        'admin_products.product_name',
+                        'admin_products.price',
+                        'admin_products.product_picture_1',
+                        'admin_products.status',
+                        'admin_products.category',
+                        'admin_products.queen_id',
                     ];
-                    sql = `SELECT admin_queens.name as queen_name, ?? FROM ?? join rrf.admin_queens on admin_products.queen_id = admin_queens.id WHERE MATCH (??) AGAINST (?)`;
+                    sql = `SELECT admin_queens.name as queen_name, ?? FROM ?? join rrf_ecommerce.admin_queens on admin_products.queen_id = admin_queens.id WHERE MATCH (??) AGAINST (?)`;
                 }
                 const values = [column, table, searchField, search];
                 data = yield this.query.rawQuery(sql, values);
             }
             else {
-                return { success: false, data: "Wrong search type" };
+                return { success: false, data: 'Wrong search type' };
             }
             console.log(data);
             return { success: true, data };
@@ -167,16 +167,14 @@ class AdminPanelServices extends abstractServices_1.default {
     login(creds) {
         return __awaiter(this, void 0, void 0, function* () {
             const { phone, password } = creds;
-            const fields = ["name", "phone", "password", "email", "photo", "role"];
-            console.log("fields", fields);
-            console.log("creds", creds);
+            const fields = ['name', 'phone', 'password', 'email', 'photo', 'role'];
             const user = yield this.query.select({
-                table: "admin",
+                table: 'admin',
                 fields: { columns: fields },
-                where: { table: "admin", field: "phone", value: phone },
+                where: { table: 'admin', field: 'phone', value: phone },
             });
             if (user.length < 1) {
-                return { success: false, message: "Username or password is incorrect!!" };
+                return { success: false, message: 'Username or password is incorrect!!' };
             }
             const { name, phone: userPhone, password: userPass, role } = user[0];
             const isPassValid = password === userPass;
@@ -187,7 +185,7 @@ class AdminPanelServices extends abstractServices_1.default {
                 return { success: true, user: userTosend, token };
             }
             else {
-                return { success: false, message: "Username or password is incorrect!!" };
+                return { success: false, message: 'Username or password is incorrect!!' };
             }
         });
     }

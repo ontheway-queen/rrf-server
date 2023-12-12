@@ -1,7 +1,7 @@
-import { Request } from "express";
-import { RowDataPacket } from "mysql2";
-import AbstractServices from "../../../abstracts/abstractServices";
-import { TCompare, TWhere } from "../../../common/utils/commonTypes/types";
+import { Request } from 'express';
+import { RowDataPacket } from 'mysql2';
+import AbstractServices from '../../../abstracts/abstractServices';
+import { TCompare, TWhere } from '../../../common/utils/commonTypes/types';
 
 class BlogServices extends AbstractServices {
   constructor() {
@@ -11,8 +11,8 @@ class BlogServices extends AbstractServices {
   // post blog
   public async postBlog(req: Request, type: string) {
     req.body.type = type;
-    if (type === "Admin") {
-      req.body.status = "Approved";
+    if (type === 'Admin') {
+      req.body.status = 'Approved';
     }
     const { filename } = req.file as Express.Multer.File;
     if (filename) {
@@ -20,11 +20,11 @@ class BlogServices extends AbstractServices {
     } else {
       return {
         success: false,
-        message: "Cannot post a blog without thumbnail photo",
+        message: 'Cannot post a blog without thumbnail photo',
       };
     }
 
-    const result = await this.query.insert("ontheway_blogs", req.body);
+    const result = await this.query.insert('ontheway_blogs', req.body);
 
     if (result.insertId) {
       return {
@@ -34,7 +34,7 @@ class BlogServices extends AbstractServices {
     } else {
       return {
         success: false,
-        message: "Cannot post blog now try again",
+        message: 'Cannot post blog now try again',
       };
     }
   }
@@ -48,7 +48,7 @@ class BlogServices extends AbstractServices {
   ) {
     type = type.toLocaleLowerCase();
     status = status.toLocaleLowerCase();
-    let totalSql = `SELECT count(id) as total FROM rrf.ontheway_blogs`;
+    let totalSql = `SELECT count(id) as total FROM rrf_ecommerce.ontheway_blogs`;
     let totalDepArray: string[] = [];
     let where:
       | {
@@ -60,36 +60,36 @@ class BlogServices extends AbstractServices {
         }
       | TWhere
       | undefined = undefined;
-    const table = "ontheway_blogs";
+    const table = 'ontheway_blogs';
     const columns = [
-      "id",
-      "title",
-      "thumbnail",
-      "author_name",
-      "author_id",
-      "post_date",
-      "status",
+      'id',
+      'title',
+      'thumbnail',
+      'author_name',
+      'author_id',
+      'post_date',
+      'status',
     ];
-    if (type !== "all" && status !== "all") {
+    if (type !== 'all' && status !== 'all') {
       where = {
         and: [
-          { table, field: "type", value: `'${type}'` },
-          { table, field: "status", value: `'${status}'` },
+          { table, field: 'type', value: `'${type}'` },
+          { table, field: 'status', value: `'${status}'` },
         ],
       };
-      totalSql = `SELECT count(id) as total FROM rrf.ontheway_blogs WHERE ontheway_blogs.type = ? and ontheway_blogs.status = ?`;
+      totalSql = `SELECT count(id) as total FROM rrf_ecommerce.ontheway_blogs WHERE ontheway_blogs.type = ? and ontheway_blogs.status = ?`;
       totalDepArray.push(type);
       totalDepArray.push(status);
-    } else if (status !== "all") {
-      where = { table, field: "status", value: `'${status}'` };
-      totalSql = `SELECT count(id) as total FROM rrf.ontheway_blogs WHERE ontheway_blogs.status = ?`;
+    } else if (status !== 'all') {
+      where = { table, field: 'status', value: `'${status}'` };
+      totalSql = `SELECT count(id) as total FROM rrf_ecommerce.ontheway_blogs WHERE ontheway_blogs.status = ?`;
       totalDepArray.push(status);
-    } else if (type !== "all") {
-      where = { table, field: "type", value: `'${type}'` };
-      totalSql = `SELECT count(id) as total FROM rrf.ontheway_blogs WHERE ontheway_blogs.type = ?`;
+    } else if (type !== 'all') {
+      where = { table, field: 'type', value: `'${type}'` };
+      totalSql = `SELECT count(id) as total FROM rrf_ecommerce.ontheway_blogs WHERE ontheway_blogs.type = ?`;
       totalDepArray.push(type);
     } else {
-      columns.push("type");
+      columns.push('type');
     }
 
     const data = await this.query.select({
@@ -98,7 +98,7 @@ class BlogServices extends AbstractServices {
         columns,
       },
       where: where,
-      orderBy: { table, field: "post_date" },
+      orderBy: { table, field: 'post_date' },
       desc: true,
       limit: { limit, skip },
     });
@@ -117,17 +117,17 @@ class BlogServices extends AbstractServices {
 
   // get a single blog
   public async getASingleBlog(id: number, status: string) {
-    const table = "ontheway_blogs";
+    const table = 'ontheway_blogs';
     const columns = [
-      "id",
-      "title",
-      "description",
-      "thumbnail",
-      "author_name",
-      "author_id",
-      "post_date",
-      "status",
-      "type",
+      'id',
+      'title',
+      'description',
+      'thumbnail',
+      'author_name',
+      'author_id',
+      'post_date',
+      'status',
+      'type',
     ];
     let where:
       | {
@@ -137,13 +137,13 @@ class BlogServices extends AbstractServices {
           compare?: TCompare;
           date?: true;
         }
-      | TWhere = { table, field: "id", value: id };
+      | TWhere = { table, field: 'id', value: id };
 
-    if (status === "Approved") {
+    if (status === 'Approved') {
       where = {
         and: [
-          { table, field: "id", value: id },
-          { table, field: "status", value: `'${status}'` },
+          { table, field: 'id', value: id },
+          { table, field: 'status', value: `'${status}'` },
         ],
       };
     }
@@ -157,28 +157,28 @@ class BlogServices extends AbstractServices {
     } else {
       return {
         success: false,
-        message: "No blog found with this id",
+        message: 'No blog found with this id',
       };
     }
   }
 
   //update a Blog
   public async updateABlog(req: Request, author?: number) {
-    const table = "ontheway_blogs";
+    const table = 'ontheway_blogs';
     const { id } = req.params;
     let body = req.body;
     const { filename } = req.file as Express.Multer.File;
 
     const checkBlog = await this.query.select({
       table,
-      fields: { columns: ["author_id", "thumbnail"] },
-      where: { table, field: "id", value: id },
+      fields: { columns: ['author_id', 'thumbnail'] },
+      where: { table, field: 'id', value: id },
     });
 
     if (!checkBlog.length) {
       return {
         success: false,
-        message: "No blog found with this id",
+        message: 'No blog found with this id',
       };
     }
 
@@ -186,7 +186,7 @@ class BlogServices extends AbstractServices {
       if (checkBlog[0].author_id !== author) {
         return {
           success: false,
-          message: "You have not access to update this blog",
+          message: 'You have not access to update this blog',
         };
       }
       const { author_id, status, ...rest } = req.body;
@@ -196,7 +196,7 @@ class BlogServices extends AbstractServices {
     if (filename) {
       body.thumbnail = filename;
       if (checkBlog[0].thumbnail) {
-        this.deleteFile.delete("blog_thumbnails", checkBlog[0].thumbnail);
+        this.deleteFile.delete('blog_thumbnails', checkBlog[0].thumbnail);
       }
     }
 
@@ -206,29 +206,29 @@ class BlogServices extends AbstractServices {
       return {
         success: true,
         data: { thumbnail: filename },
-        message: "Blog updated successfully",
+        message: 'Blog updated successfully',
       };
     } else {
       return {
         success: false,
-        message: "Cannot update blog now",
+        message: 'Cannot update blog now',
       };
     }
   }
 
   // delete a Blog
   public async deleteABlog(id: number, author?: number) {
-    const table = "ontheway_blogs";
+    const table = 'ontheway_blogs';
     const checkBlog = await this.query.select({
       table,
-      fields: { columns: ["author_id", "thumbnail"] },
-      where: { table, field: "id", value: id },
+      fields: { columns: ['author_id', 'thumbnail'] },
+      where: { table, field: 'id', value: id },
     });
 
     if (!checkBlog.length) {
       return {
         success: false,
-        message: "No blog found with this id",
+        message: 'No blog found with this id',
       };
     }
 
@@ -236,7 +236,7 @@ class BlogServices extends AbstractServices {
       if (author !== checkBlog[0].author_id) {
         return {
           success: false,
-          message: "You dont have access to delete this blog",
+          message: 'You dont have access to delete this blog',
         };
       }
     }
@@ -245,17 +245,17 @@ class BlogServices extends AbstractServices {
 
     if (res.affectedRows) {
       if (checkBlog[0].thumbnail) {
-        await this.deleteFile.delete("blog_thumbnails", checkBlog[0].thumbnail);
+        await this.deleteFile.delete('blog_thumbnails', checkBlog[0].thumbnail);
       }
 
       return {
         success: true,
-        message: "Blog deleted successfully!",
+        message: 'Blog deleted successfully!',
       };
     } else {
       return {
         success: false,
-        message: "Cannot delete blog now",
+        message: 'Cannot delete blog now',
       };
     }
   }

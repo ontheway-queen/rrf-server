@@ -1,8 +1,8 @@
-import { Request } from "express";
-import { RowDataPacket } from "mysql2";
-import AbstractServices from "../../../abstracts/abstractServices";
-import CustomError from "../../../common/utils/errors/customError";
-import Lib from "../../../common/utils/libraries/lib";
+import { Request } from 'express';
+import { RowDataPacket } from 'mysql2';
+import AbstractServices from '../../../abstracts/abstractServices';
+import CustomError from '../../../common/utils/errors/customError';
+import Lib from '../../../common/utils/libraries/lib';
 
 type TInfo = {
   name: string;
@@ -28,7 +28,7 @@ class QueenServices extends AbstractServices {
   public async searchQueen(req: Request) {
     const { name } = req.params;
     const sql =
-      "SELECT queens.admin_queens_id as id, queens.name, queens.photo, queens.city, queens.division, queens.designation FROM rrf.queens where match(queens.name) against(?)";
+      'SELECT queens.admin_queens_id as id, queens.name, queens.photo, queens.city, queens.division, queens.designation FROM rrf_ecommerce.queens where match(queens.name) against(?)';
 
     const data = await this.query.rawQuery(sql, [name]);
 
@@ -57,44 +57,44 @@ class QueenServices extends AbstractServices {
         if (division) info.division = division;
 
         await query.update({
-          table: "admin_queens",
+          table: 'admin_queens',
           data: info,
           where: { id },
         });
 
         const data = await query.select({
-          table: "queens",
-          fields: { columns: ["name"] },
-          where: { table: "queens", field: "admin_queens_id", value: id },
+          table: 'queens',
+          fields: { columns: ['name'] },
+          where: { table: 'queens', field: 'admin_queens_id', value: id },
         });
 
         if (data.length > 0) {
           const upVals = [
-            "name",
-            "phone",
-            "photo",
-            "address",
-            "post_code",
-            "city",
-            "division",
-            "lat",
-            "lng",
-            "nid_front",
-            "nid_back",
+            'name',
+            'phone',
+            'photo',
+            'address',
+            'post_code',
+            'city',
+            'division',
+            'lat',
+            'lng',
+            'nid_front',
+            'nid_back',
           ];
 
-          if (email) upVals.push("email");
+          if (email) upVals.push('email');
 
           await query.replace({
-            replace: [...upVals, "admin_queens_id"],
-            into: "queens",
-            select: [...upVals, "id"],
-            from: "admin_queens",
+            replace: [...upVals, 'admin_queens_id'],
+            into: 'queens',
+            select: [...upVals, 'id'],
+            from: 'admin_queens',
             where: { id },
           });
         }
 
-        return { success: true, message: "Queen successfully updated" };
+        return { success: true, message: 'Queen successfully updated' };
       }
     );
 
@@ -108,13 +108,13 @@ class QueenServices extends AbstractServices {
   public async getAllApprovedQueens(req: Request) {
     const { limit, skip } = req.query;
     const sql =
-      "SELECT distinct queens.admin_queens_id as id,(select count(admin_products_id) as total_product from rrf.products where products.queen_id = queens.admin_queens_id)  as total_product, queens.name, queens.photo FROM rrf.queens join rrf.products where rrf.queens.admin_queens_id = rrf.products.queen_id order by (select count(admin_products_id) as total_product from rrf.products where products.queen_id = queens.admin_queens_id) desc limit ? offset ?";
+      'SELECT distinct queens.admin_queens_id as id,(select count(admin_products_id) as total_product from rrf_ecommerce.products where products.queen_id = queens.admin_queens_id)  as total_product, queens.name, queens.photo FROM rrf_ecommerce.queens join rrf_ecommerce.products where rrf_ecommerce.queens.admin_queens_id = rrf_ecommerce.products.queen_id order by (select count(admin_products_id) as total_product from rrf_ecommerce.products where products.queen_id = queens.admin_queens_id) desc limit ? offset ?';
     const values: number[] = [Number(limit), Number(skip)];
 
     const data = await this.query.rawQuery(sql, values);
 
     const forCount =
-      "SELECT count(distinct(rrf.queens.admin_queens_id)) as total FROM rrf.queens join rrf.products where rrf.queens.admin_queens_id = rrf.products.queen_id";
+      'SELECT count(distinct(rrf_ecommerce.queens.admin_queens_id)) as total FROM rrf_ecommerce.queens join rrf_ecommerce.products where rrf_ecommerce.queens.admin_queens_id = rrf_ecommerce.products.queen_id';
 
     const count = await this.query.rawQuery(forCount);
 
@@ -133,9 +133,9 @@ class QueenServices extends AbstractServices {
     const { old_password, new_password } = req.body;
 
     const oldPass = await this.query.select({
-      fields: { columns: ["password"] },
-      table: "admin_queens",
-      where: { table: "admin_queens", field: "id", value: id },
+      fields: { columns: ['password'] },
+      table: 'admin_queens',
+      where: { table: 'admin_queens', field: 'id', value: id },
     });
 
     const isPassValid = await Lib.compare(old_password, oldPass[0].password);
@@ -145,19 +145,19 @@ class QueenServices extends AbstractServices {
 
       await this.query.update({
         data: { password: hashedPassword },
-        table: "admin_queens",
+        table: 'admin_queens',
         where: { id },
       });
 
       return {
         success: true,
-        message: "Your password changed successfully",
+        message: 'Your password changed successfully',
       };
     } else {
       throw new CustomError(
-        "Your old password is incorrect",
+        'Your old password is incorrect',
         400,
-        "Bad request"
+        'Bad request'
       );
     }
   }
@@ -175,11 +175,11 @@ class QueenServices extends AbstractServices {
     const data: any = [];
 
     if (data) {
-      return { success: true, message: "Successfully deleted the Customer" };
+      return { success: true, message: 'Successfully deleted the Customer' };
     } else {
       return {
         success: false,
-        message: "No data found with this Phone",
+        message: 'No data found with this Phone',
       };
     }
   }

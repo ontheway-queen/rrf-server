@@ -38,21 +38,21 @@ class CustomerServices extends abstractServices_1.default {
             const { name, phone, password: bodyPass, address } = body;
             return yield this.transaction.beginTransaction((query) => __awaiter(this, void 0, void 0, function* () {
                 const user = yield query.select({
-                    table: "customers",
-                    fields: { columns: ["phone", "photo", "id"] },
-                    where: { table: "customers", field: "phone", value: phone },
+                    table: 'customers',
+                    fields: { columns: ['phone', 'photo', 'id'] },
+                    where: { table: 'customers', field: 'phone', value: phone },
                 });
                 const hashedPass = yield lib_1.default.hashPass(bodyPass);
                 let data;
                 if (user.length) {
                     yield query.update({
-                        table: "customers",
+                        table: 'customers',
                         data: Object.assign(Object.assign({}, body), { guest: 0, password: hashedPass }),
                         where: { id: user[0].id },
                     });
                 }
                 else {
-                    data = yield query.insert("customers", Object.assign(Object.assign({}, body), { guest: 0, password: hashedPass }));
+                    data = yield query.insert('customers', Object.assign(Object.assign({}, body), { guest: 0, password: hashedPass }));
                 }
                 const { password } = body, rest = __rest(body, ["password"]);
                 const tokenCreds = { name, phone, address };
@@ -72,11 +72,11 @@ class CustomerServices extends abstractServices_1.default {
         return __awaiter(this, void 0, void 0, function* () {
             const { limit, skip } = req.query;
             const data = yield this.query.select({
-                table: "customers",
-                fields: { columns: ["id", "name", "photo", "phone", "address"] },
+                table: 'customers',
+                fields: { columns: ['id', 'name', 'photo', 'phone', 'address'] },
                 limit: { limit: limit, skip: skip },
             });
-            const forCount = "SELECT count(rrf.customers.id) as total FROM rrf.customers";
+            const forCount = 'SELECT count(rrf_ecommerce.customers.id) as total FROM rrf_ecommerce.customers';
             const total = (yield this.query.rawQuery(forCount));
             console.log({ total });
             return { success: true, data: data, total: total[0].total };
@@ -89,22 +89,22 @@ class CustomerServices extends abstractServices_1.default {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
             const { phone } = req.params;
-            const finder = id ? ["id", id] : ["phone", phone];
+            const finder = id ? ['id', id] : ['phone', phone];
             const columns = [
-                "id",
-                "name",
-                "phone",
-                "address",
-                "email",
-                "post_code",
-                "photo",
-                "city",
-                "guest",
+                'id',
+                'name',
+                'phone',
+                'address',
+                'email',
+                'post_code',
+                'photo',
+                'city',
+                'guest',
             ];
             const data = yield this.query.select({
-                table: "customers",
+                table: 'customers',
                 fields: { columns },
-                where: { table: "customers", field: finder[0], value: finder[1] },
+                where: { table: 'customers', field: finder[0], value: finder[1] },
             });
             if (data.length) {
                 return { success: true, data: data[0] };
@@ -112,7 +112,7 @@ class CustomerServices extends abstractServices_1.default {
             else {
                 return {
                     success: false,
-                    message: "No data found with this Phone",
+                    message: 'No data found with this Phone',
                 };
             }
         });
@@ -126,19 +126,19 @@ class CustomerServices extends abstractServices_1.default {
             const { filename } = req.file || {};
             return yield this.transaction.beginTransaction((query) => __awaiter(this, void 0, void 0, function* () {
                 const data = yield query.select({
-                    table: "customers",
-                    fields: { columns: ["phone", "photo"] },
-                    where: { table: "customers", field: "id", value: id },
+                    table: 'customers',
+                    fields: { columns: ['phone', 'photo'] },
+                    where: { table: 'customers', field: 'id', value: id },
                 });
                 if (data.length < 1) {
-                    filename && this.deleteFile.delete("customers", filename);
-                    throw new customError_1.default("Use does not exist!!", 400, "Bad request");
+                    filename && this.deleteFile.delete('customers', filename);
+                    throw new customError_1.default('Use does not exist!!', 400, 'Bad request');
                 }
                 else {
                     const updateData = filename
                         ? Object.assign(Object.assign({}, req.body), { photo: filename }) : req.body;
                     yield query.update({
-                        table: "customers",
+                        table: 'customers',
                         data: updateData,
                         where: { id },
                     });
@@ -156,13 +156,13 @@ class CustomerServices extends abstractServices_1.default {
                     if (req.body.email) {
                         buyerBody = Object.assign(Object.assign({}, buyerBody), { email: req.body.email });
                     }
-                    oldPhoto && this.deleteFile.delete("customers", oldPhoto);
+                    oldPhoto && this.deleteFile.delete('customers', oldPhoto);
                 }
                 return {
                     success: true,
                     data: {
                         photo: filename,
-                        message: "User successfully updated",
+                        message: 'User successfully updated',
                     },
                 };
             }));
@@ -175,17 +175,17 @@ class CustomerServices extends abstractServices_1.default {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
             const data = yield this.query.update({
-                table: "customers",
+                table: 'customers',
                 data: { is_deleted: 1 },
                 where: { id },
             });
             if (data) {
-                return { success: true, message: "Successfully deleted the Customer" };
+                return { success: true, message: 'Successfully deleted the Customer' };
             }
             else {
                 return {
                     success: false,
-                    message: "No data found with this Phone",
+                    message: 'No data found with this Phone',
                 };
             }
         });

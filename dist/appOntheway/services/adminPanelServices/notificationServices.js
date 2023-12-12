@@ -18,80 +18,80 @@ class notificationServices extends abstractServices_1.default {
         super();
         //post or update a notification
         this.postNotification = (type, body) => __awaiter(this, void 0, void 0, function* () {
-            if (type.startsWith("new")) {
+            if (type.startsWith('new')) {
                 const item = yield this.query.select({
-                    table: "notifications",
-                    fields: { columns: ["id", "status", "count"] },
-                    where: { table: "notifications", field: "type", value: `'${type}'` },
+                    table: 'notifications',
+                    fields: { columns: ['id', 'status', 'count'] },
+                    where: { table: 'notifications', field: 'type', value: `'${type}'` },
                 });
                 if (item.length) {
                     let updated;
-                    if (item[0].status === "unread") {
+                    if (item[0].status === 'unread') {
                         updated = yield this.query.update({
-                            table: "notifications",
+                            table: 'notifications',
                             data: { count: item[0].count + 1 },
                             where: { id: item[0].id },
                         });
                     }
                     else {
                         updated = yield this.query.update({
-                            table: "notifications",
-                            data: { status: "unread", count: 1 },
+                            table: 'notifications',
+                            data: { status: 'unread', count: 1 },
                             where: { id: item[0].id },
                         });
                     }
                     const notification = yield this.query.select({
-                        table: "notifications",
+                        table: 'notifications',
                         fields: {
-                            columns: ["id", "count", "type", "msg", "status", "update_id"],
-                            as: [["date", "time"]],
+                            columns: ['id', 'count', 'type', 'msg', 'status', 'update_id'],
+                            as: [['date', 'time']],
                         },
-                        where: { table: "notifications", field: "id", value: item[0].id },
+                        where: { table: 'notifications', field: 'id', value: item[0].id },
                     });
                     return notification[0];
                 }
                 else {
-                    const data = yield this.query.insert("notifications", Object.assign(Object.assign({}, body), { type, count: 1 }));
+                    const data = yield this.query.insert('notifications', Object.assign(Object.assign({}, body), { type, count: 1 }));
                     const notification = yield this.query.select({
-                        table: "notifications",
+                        table: 'notifications',
                         fields: {
-                            columns: ["id", "count", "type", "msg", "status", "update_id"],
-                            as: [["date", "time"]],
+                            columns: ['id', 'count', 'type', 'msg', 'status', 'update_id'],
+                            as: [['date', 'time']],
                         },
-                        where: { table: "notifications", field: "id", value: data.insertId },
+                        where: { table: 'notifications', field: 'id', value: data.insertId },
                     });
                     return notification[0];
                 }
             }
             else {
                 const updated = yield this.query.select({
-                    table: "notifications",
-                    fields: { columns: ["id"] },
+                    table: 'notifications',
+                    fields: { columns: ['id'] },
                     where: {
-                        table: "notifications",
-                        field: "update_id",
+                        table: 'notifications',
+                        field: 'update_id',
                         value: body.update_id,
                     },
                 });
                 if (updated.length) {
                     yield this.query.update({
-                        table: "notifications",
-                        data: { status: "unread", msg: body.msg },
+                        table: 'notifications',
+                        data: { status: 'unread', msg: body.msg },
                         where: { id: updated[0].id },
                     });
                 }
                 else {
-                    yield this.query.insert("notifications", Object.assign(Object.assign({}, body), { type }));
+                    yield this.query.insert('notifications', Object.assign(Object.assign({}, body), { type }));
                 }
                 const notification = yield this.query.select({
-                    table: "notifications",
+                    table: 'notifications',
                     fields: {
-                        columns: ["id", "count", "type", "msg", "status", "update_id"],
-                        as: [["date", "time"]],
+                        columns: ['id', 'count', 'type', 'msg', 'status', 'update_id'],
+                        as: [['date', 'time']],
                     },
                     where: {
-                        table: "notifications",
-                        field: "update_id",
+                        table: 'notifications',
+                        field: 'update_id',
                         value: body.update_id,
                     },
                 });
@@ -101,12 +101,12 @@ class notificationServices extends abstractServices_1.default {
         // get all notifications
         this.getAllNotification = () => __awaiter(this, void 0, void 0, function* () {
             const notifications = yield this.query.select({
-                table: "notifications",
+                table: 'notifications',
                 fields: {
-                    columns: ["id", "count", "type", "msg", "status", "update_id"],
-                    as: [["date", "time"]],
+                    columns: ['id', 'count', 'type', 'msg', 'status', 'update_id'],
+                    as: [['date', 'time']],
                 },
-                orderBy: { table: "notifications", field: "date" },
+                orderBy: { table: 'notifications', field: 'date' },
                 desc: true,
             });
             return { success: true, data: notifications };
@@ -115,12 +115,12 @@ class notificationServices extends abstractServices_1.default {
         this.readNotification = (req) => __awaiter(this, void 0, void 0, function* () {
             const { id } = req.body;
             const result = yield this.query.update({
-                table: "notifications",
-                data: { status: "read" },
+                table: 'notifications',
+                data: { status: 'read' },
                 where: { id },
             });
             if (result.affectedRows) {
-                return { success: true, msg: "Notification read successfully" };
+                return { success: true, msg: 'Notification read successfully' };
             }
             else {
                 return { success: false };
@@ -128,10 +128,10 @@ class notificationServices extends abstractServices_1.default {
         });
         // delete all notification
         this.clearNotifications = () => __awaiter(this, void 0, void 0, function* () {
-            const sql = `DELETE FROM rrf.notifications`;
+            const sql = `DELETE FROM rrf_ecommerce.notifications`;
             const result = (yield this.query.rawQuery(sql));
             if (result.affectedRows) {
-                return { success: true, msg: "Notifications clear successfully" };
+                return { success: true, msg: 'Notifications clear successfully' };
             }
             else {
                 return { success: false };

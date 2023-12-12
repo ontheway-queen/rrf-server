@@ -1,9 +1,9 @@
-import { Request } from "express";
-import { RowDataPacket } from "mysql2";
-import AbstractServices from "../../../abstracts/abstractServices";
-import { TCredType } from "../../../common/utils/commonTypes/types";
-import RequireOtp from "../../services/otpServices/requireOtp";
-import OrderDetails from "./insertOrder";
+import { Request } from 'express';
+import { RowDataPacket } from 'mysql2';
+import AbstractServices from '../../../abstracts/abstractServices';
+import { TCredType } from '../../../common/utils/commonTypes/types';
+import RequireOtp from '../../services/otpServices/requireOtp';
+import OrderDetails from './insertOrder';
 
 interface TOrder {
   delivery_address: string;
@@ -43,17 +43,17 @@ class OrderServices extends AbstractServices {
 
         if (valid) {
           const guest = await query.select({
-            table: "customers",
-            fields: { columns: ["id", "guest"] },
+            table: 'customers',
+            fields: { columns: ['id', 'guest'] },
             where: {
-              table: "customers",
-              field: "phone",
+              table: 'customers',
+              field: 'phone',
               value: guest_info.phone,
             },
           });
 
           if (guest.length < 1) {
-            const guestCustomer = await query.insert("customers", {
+            const guestCustomer = await query.insert('customers', {
               ...guest_info,
               guest: 1,
             });
@@ -64,7 +64,7 @@ class OrderServices extends AbstractServices {
             const id = guest[0].id;
 
             await query.update({
-              table: "customers",
+              table: 'customers',
               data: { ...guest_info, guest: isGuest },
               where: { id },
             });
@@ -79,24 +79,24 @@ class OrderServices extends AbstractServices {
       const data = await new OrderDetails().insert(query, order, order_details);
       if (data.success) {
         const newOrder = await query.select({
-          table: "orders",
+          table: 'orders',
           fields: {
-            columns: ["delivery_address", "status", "id", "order_date"],
+            columns: ['delivery_address', 'status', 'id', 'order_date'],
             otherFields: [
-              { table: "customers", as: [["name", "customer_name"]] },
+              { table: 'customers', as: [['name', 'customer_name']] },
             ],
           },
           join: [
             {
-              join: { table: "customers", field: "id" },
-              on: { table: "orders", field: "customer_id" },
+              join: { table: 'customers', field: 'id' },
+              on: { table: 'orders', field: 'customer_id' },
             },
           ],
-          where: { table: "orders", field: "id", value: data.orderId },
+          where: { table: 'orders', field: 'id', value: data.orderId },
         });
         return {
           success: true,
-          message: "Order successfull",
+          message: 'Order successfull',
           data: newOrder[0],
         };
       } else {
@@ -112,47 +112,47 @@ class OrderServices extends AbstractServices {
     const { queen_id } = req.params;
 
     const data = await this.query.select({
-      table: "order_details",
+      table: 'order_details',
       fields: {
-        columns: ["order_id", "product_name", "product_id", "quantity"],
+        columns: ['order_id', 'product_name', 'product_id', 'quantity'],
         otherFields: [
-          { table: "customers", as: [["name", "customer_name"]] },
+          { table: 'customers', as: [['name', 'customer_name']] },
           {
-            table: "orders",
+            table: 'orders',
             columns: [
-              "customer_id",
-              "delivery_address",
-              "order_date",
-              "status",
+              'customer_id',
+              'delivery_address',
+              'order_date',
+              'status',
             ],
           },
           {
-            table: "admin_products",
+            table: 'admin_products',
             columns: [
-              "product_picture_1",
-              "product_picture_2",
-              "price",
-              "short_desc",
+              'product_picture_1',
+              'product_picture_2',
+              'price',
+              'short_desc',
             ],
           },
         ],
       },
       join: [
         {
-          join: { table: "orders", field: "id" },
-          on: { table: "order_details", field: "order_id" },
+          join: { table: 'orders', field: 'id' },
+          on: { table: 'order_details', field: 'order_id' },
         },
         {
-          join: { table: "customers", field: "id" },
-          on: { table: "orders", field: "customer_id" },
+          join: { table: 'customers', field: 'id' },
+          on: { table: 'orders', field: 'customer_id' },
         },
         {
-          join: { table: "admin_products", field: "id" },
-          on: { table: "order_details", field: "product_id" },
+          join: { table: 'admin_products', field: 'id' },
+          on: { table: 'order_details', field: 'product_id' },
         },
       ],
 
-      where: { table: "order_details", field: "queen_id", value: queen_id },
+      where: { table: 'order_details', field: 'queen_id', value: queen_id },
     });
 
     return { success: true, data };
@@ -163,50 +163,50 @@ class OrderServices extends AbstractServices {
     const { queen_id, status } = req.params;
 
     const data = await this.query.select({
-      table: "order_details",
+      table: 'order_details',
       fields: {
-        columns: ["order_id", "product_name", "product_id", "quantity"],
+        columns: ['order_id', 'product_name', 'product_id', 'quantity'],
         otherFields: [
-          { table: "customers", as: [["name", "customer_name"]] },
+          { table: 'customers', as: [['name', 'customer_name']] },
           {
-            table: "orders",
+            table: 'orders',
             columns: [
-              "customer_id",
-              "delivery_address",
-              "order_date",
-              "status",
+              'customer_id',
+              'delivery_address',
+              'order_date',
+              'status',
             ],
           },
           {
-            table: "admin_products",
+            table: 'admin_products',
             columns: [
-              "product_picture_1",
-              "product_picture_2",
-              "price",
-              "short_desc",
+              'product_picture_1',
+              'product_picture_2',
+              'price',
+              'short_desc',
             ],
           },
         ],
       },
       join: [
         {
-          join: { table: "orders", field: "id" },
-          on: { table: "order_details", field: "order_id" },
+          join: { table: 'orders', field: 'id' },
+          on: { table: 'order_details', field: 'order_id' },
         },
         {
-          join: { table: "customers", field: "id" },
-          on: { table: "orders", field: "customer_id" },
+          join: { table: 'customers', field: 'id' },
+          on: { table: 'orders', field: 'customer_id' },
         },
         {
-          join: { table: "admin_products", field: "id" },
-          on: { table: "order_details", field: "product_id" },
+          join: { table: 'admin_products', field: 'id' },
+          on: { table: 'order_details', field: 'product_id' },
         },
       ],
 
       where: {
         and: [
-          { table: "order_details", field: "queen_id", value: queen_id },
-          { table: "orders", field: "status", value: `'${status}'` },
+          { table: 'order_details', field: 'queen_id', value: queen_id },
+          { table: 'orders', field: 'status', value: `'${status}'` },
         ],
       },
     });
@@ -221,59 +221,59 @@ class OrderServices extends AbstractServices {
     const { customer_id, status } = req.params;
 
     const query: TCredType = {
-      table: "order_details",
+      table: 'order_details',
       fields: {
         columns: [
-          "order_id",
-          "delivery_date",
-          "product_name",
-          "product_category",
-          "price",
-          "quantity",
-          "delivered",
-          "canceled",
-          "product_id",
+          'order_id',
+          'delivery_date',
+          'product_name',
+          'product_category',
+          'price',
+          'quantity',
+          'delivered',
+          'canceled',
+          'product_id',
         ],
         otherFields: [
           {
-            table: "admin_products",
-            as: [["product_picture_1", "product_picture"]],
+            table: 'admin_products',
+            as: [['product_picture_1', 'product_picture']],
           },
           {
-            table: "orders",
-            columns: ["order_date", "delivery_address", "canceled", "status"],
+            table: 'orders',
+            columns: ['order_date', 'delivery_address', 'canceled', 'status'],
           },
         ],
       },
       join: [
         {
-          join: { table: "orders", field: "id" },
-          on: { table: "order_details", field: "order_id" },
+          join: { table: 'orders', field: 'id' },
+          on: { table: 'order_details', field: 'order_id' },
         },
         {
-          join: { table: "admin_products", field: "id" },
-          on: { table: "order_details", field: "product_id" },
+          join: { table: 'admin_products', field: 'id' },
+          on: { table: 'order_details', field: 'product_id' },
         },
       ],
     };
 
-    if (status === "all") {
+    if (status === 'all') {
       query.where = {
-        table: "orders",
-        field: "customer_id",
+        table: 'orders',
+        field: 'customer_id',
         value: customer_id,
       };
     } else {
       query.where = {
         and: [
           {
-            table: "orders",
-            field: "customer_id",
+            table: 'orders',
+            field: 'customer_id',
             value: customer_id,
           },
           {
-            table: "orders",
-            field: "status",
+            table: 'orders',
+            field: 'status',
             value: `'${status}'`,
           },
         ],
@@ -291,23 +291,24 @@ class OrderServices extends AbstractServices {
   public async getAllOrders(req: Request) {
     const { limit, skip } = req.query;
     const data = await this.query.select({
-      table: "orders",
+      table: 'orders',
       fields: {
-        columns: ["id", "delivery_address", "status", "order_date"],
-        otherFields: [{ table: "customers", as: [["name", "customer_name"]] }],
+        columns: ['id', 'delivery_address', 'status', 'order_date'],
+        otherFields: [{ table: 'customers', as: [['name', 'customer_name']] }],
       },
       join: [
         {
-          join: { table: "customers", field: "id" },
-          on: { table: "orders", field: "customer_id" },
+          join: { table: 'customers', field: 'id' },
+          on: { table: 'orders', field: 'customer_id' },
         },
       ],
       limit: { limit: limit as string, skip: Number(skip) || 0 },
-      orderBy: { table: "orders", field: "order_date" },
+      orderBy: { table: 'orders', field: 'order_date' },
       desc: true,
     });
 
-    const forCount = "SELECT count(rrf.orders.id) as total FROM rrf.orders";
+    const forCount =
+      'SELECT count(rrf_ecommerce.orders.id) as total FROM rrf_ecommerce.orders';
 
     const count: any = await this.query.rawQuery(forCount);
     return { success: true, total: count[0].total, data: data };
@@ -320,25 +321,25 @@ class OrderServices extends AbstractServices {
     const { limit, skip } = req.query;
     const { status } = req.params;
     const data = await this.query.select({
-      table: "orders",
+      table: 'orders',
       fields: {
-        columns: ["id", "delivery_address", "status", "order_date"],
-        otherFields: [{ table: "customers", as: [["name", "customer_name"]] }],
+        columns: ['id', 'delivery_address', 'status', 'order_date'],
+        otherFields: [{ table: 'customers', as: [['name', 'customer_name']] }],
       },
-      where: { table: "orders", field: "status", value: `'${status}'` },
+      where: { table: 'orders', field: 'status', value: `'${status}'` },
       join: [
         {
-          join: { table: "customers", field: "id" },
-          on: { table: "orders", field: "customer_id" },
+          join: { table: 'customers', field: 'id' },
+          on: { table: 'orders', field: 'customer_id' },
         },
       ],
       limit: { limit: limit as string, skip: Number(skip) || 0 },
-      orderBy: { table: "orders", field: "order_date" },
+      orderBy: { table: 'orders', field: 'order_date' },
       desc: true,
     });
 
     const forCount =
-      "SELECT count(rrf.orders.id) as total FROM rrf.orders where rrf.orders.status=?";
+      'SELECT count(rrf_ecommerce.orders.id) as total FROM rrf_ecommerce.orders where rrf_ecommerce.orders.status=?';
     const count: any = await this.query.rawQuery(forCount, [status]);
     return { success: true, total: count[0].total, data: data };
   }
@@ -355,36 +356,36 @@ class OrderServices extends AbstractServices {
     let totalValues: string[] = [];
 
     // initial get order by status all
-    let sql = `SELECT orders.id,orders.order_date,orders.status,orders.note,customers.name as customer_name FROM rrf.orders join rrf.customers on orders.customer_id = customers.id  order by order_date desc limit ${limit} offset ${skip}`;
+    let sql = `SELECT orders.id,orders.order_date,orders.status,orders.note,customers.name as customer_name FROM rrf_ecommerce.orders join rrf_ecommerce.customers on orders.customer_id = customers.id  order by order_date desc limit ${limit} offset ${skip}`;
 
-    let totalSql = `SELECT count(orders.id) as total FROM rrf.orders`;
+    let totalSql = `SELECT count(orders.id) as total FROM rrf_ecommerce.orders`;
 
-    if (status === "all" && from && to) {
+    if (status === 'all' && from && to) {
       values = [from, to];
 
       totalValues.push(from as string, to as string);
 
-      sql = `SELECT orders.id,orders.order_date,orders.status,orders.note,customers.name as customer_name FROM rrf.orders join rrf.customers on orders.customer_id = customers.id where orders.order_date between ? and ? order by order_date desc limit ${limit} offset ${skip}`;
+      sql = `SELECT orders.id,orders.order_date,orders.status,orders.note,customers.name as customer_name FROM rrf_ecommerce.orders join rrf_ecommerce.customers on orders.customer_id = customers.id where orders.order_date between ? and ? order by order_date desc limit ${limit} offset ${skip}`;
 
-      totalSql = `SELECT count(orders.id) as total FROM rrf.orders where orders.order_date between ? and ?`;
+      totalSql = `SELECT count(orders.id) as total FROM rrf_ecommerce.orders where orders.order_date between ? and ?`;
     }
 
-    if (status !== "all" && from && to) {
+    if (status !== 'all' && from && to) {
       values = [status, ...values];
       totalValues.push(status, from as string, to as string);
 
-      sql = `SELECT orders.id,orders.order_date,orders.status,orders.note,customers.name as customer_name FROM rrf.orders join rrf.customers on orders.customer_id = customers.id where orders.status= ? and orders.order_date between ? and ? order by order_date desc limit ${limit} offset ${skip}`;
+      sql = `SELECT orders.id,orders.order_date,orders.status,orders.note,customers.name as customer_name FROM rrf_ecommerce.orders join rrf_ecommerce.customers on orders.customer_id = customers.id where orders.status= ? and orders.order_date between ? and ? order by order_date desc limit ${limit} offset ${skip}`;
 
-      totalSql = `SELECT count(orders.id) as total FROM rrf.orders where orders.status=? and orders.order_date between ? and ? `;
+      totalSql = `SELECT count(orders.id) as total FROM rrf_ecommerce.orders where orders.status=? and orders.order_date between ? and ? `;
     }
 
-    if (status !== "all" && !from) {
+    if (status !== 'all' && !from) {
       values = [status, ...values];
       totalValues.push(status);
 
-      sql = `SELECT orders.id,orders.order_date,orders.status,orders.note,customers.name as customer_name FROM rrf.orders join rrf.customers on orders.customer_id = customers.id where orders.status= ? order by order_date desc limit ${limit} offset ${skip}`;
+      sql = `SELECT orders.id,orders.order_date,orders.status,orders.note,customers.name as customer_name FROM rrf_ecommerce.orders join rrf_ecommerce.customers on orders.customer_id = customers.id where orders.status= ? order by order_date desc limit ${limit} offset ${skip}`;
 
-      totalSql = `SELECT count(orders.id) as total FROM rrf.orders where orders.status=?`;
+      totalSql = `SELECT count(orders.id) as total FROM rrf_ecommerce.orders where orders.status=?`;
     }
 
     const data = await this.query.rawQuery(sql, values);
@@ -404,66 +405,66 @@ class OrderServices extends AbstractServices {
 
     return this.transaction.beginTransaction(async (query) => {
       const order = await query.select({
-        table: "orders",
+        table: 'orders',
         fields: {
           columns: [
-            "delivery_address",
-            "status",
-            "queen_id",
-            "note",
-            "order_date",
+            'delivery_address',
+            'status',
+            'queen_id',
+            'note',
+            'order_date',
           ],
-          as: [["id", "order_id"]],
+          as: [['id', 'order_id']],
 
           otherFields: [
             {
-              table: "customers",
+              table: 'customers',
               as: [
-                ["name", "customer_name"],
-                ["phone", "customer_phone"],
+                ['name', 'customer_name'],
+                ['phone', 'customer_phone'],
               ],
             },
           ],
         },
         join: [
           {
-            join: { table: "customers", field: "id" },
-            on: { table: "orders", field: "customer_id" },
+            join: { table: 'customers', field: 'id' },
+            on: { table: 'orders', field: 'customer_id' },
           },
         ],
-        where: { table: "orders", field: "id", value: id },
+        where: { table: 'orders', field: 'id', value: id },
       });
 
       const order_details = await query.select({
-        table: "order_details",
+        table: 'order_details',
         fields: {
           columns: [
-            "order_id",
-            "product_name",
-            "product_category",
-            "product_id",
-            "price",
-            "quantity",
-            "delivery_date",
+            'order_id',
+            'product_name',
+            'product_category',
+            'product_id',
+            'price',
+            'quantity',
+            'delivery_date',
           ],
-          as: [["id", "order_id"]],
+          as: [['id', 'order_id']],
           otherFields: [
             {
-              table: "admin_queens",
+              table: 'admin_queens',
               as: [
-                ["name", "queen_name"],
-                ["photo", "queen_photo"],
+                ['name', 'queen_name'],
+                ['photo', 'queen_photo'],
               ],
             },
           ],
         },
         join: [
           {
-            join: { table: "admin_queens", field: "id" },
-            on: { table: "order_details", field: "queen_id" },
+            join: { table: 'admin_queens', field: 'id' },
+            on: { table: 'order_details', field: 'queen_id' },
           },
         ],
-        where: { table: "order_details", field: "order_id", value: id },
+        where: { table: 'order_details', field: 'order_id', value: id },
       });
 
       return { success: true, data: { ...order[0], order_details } };
@@ -475,31 +476,31 @@ class OrderServices extends AbstractServices {
     const { id } = req.params;
 
     const products = await this.query.select({
-      table: "order_details",
+      table: 'order_details',
       fields: {
         columns: [
-          "queen_id",
-          "product_name",
-          "product_category",
-          "product_id",
-          "price",
-          "quantity",
-          "delivery_date",
+          'queen_id',
+          'product_name',
+          'product_category',
+          'product_id',
+          'price',
+          'quantity',
+          'delivery_date',
         ],
         otherFields: [
           {
-            table: "admin_queens",
-            as: [["name", "queen_name"]],
+            table: 'admin_queens',
+            as: [['name', 'queen_name']],
           },
         ],
       },
       join: [
         {
-          join: { table: "admin_queens", field: "id" },
-          on: { table: "order_details", field: "queen_id" },
+          join: { table: 'admin_queens', field: 'id' },
+          on: { table: 'order_details', field: 'queen_id' },
         },
       ],
-      where: { table: "order_details", field: "order_id", value: Number(id) },
+      where: { table: 'order_details', field: 'order_id', value: Number(id) },
     });
 
     if (products.length) {
@@ -510,7 +511,7 @@ class OrderServices extends AbstractServices {
     } else {
       return {
         success: false,
-        message: "No products found with this id",
+        message: 'No products found with this id',
       };
     }
   }
@@ -521,21 +522,21 @@ class OrderServices extends AbstractServices {
     const { phone } = req.query;
 
     const status = await this.query.select({
-      table: "orders",
+      table: 'orders',
       fields: {
-        columns: ["status"],
-        as: [["id", "order_id"]],
+        columns: ['status'],
+        as: [['id', 'order_id']],
       },
       join: [
         {
-          join: { table: "customers", field: "id" },
-          on: { table: "orders", field: "customer_id" },
+          join: { table: 'customers', field: 'id' },
+          on: { table: 'orders', field: 'customer_id' },
         },
       ],
       where: {
         and: [
-          { table: "orders", field: "id", value: id },
-          { table: "customers", field: "phone", value: phone as string },
+          { table: 'orders', field: 'id', value: id },
+          { table: 'customers', field: 'phone', value: phone as string },
         ],
       },
     });
@@ -555,12 +556,12 @@ class OrderServices extends AbstractServices {
     const { status, note } = req.body;
 
     await this.query.update({
-      table: "orders",
+      table: 'orders',
       data: { status, note },
       where: { id },
     });
 
-    return { success: true, message: "Order status successfully updated" };
+    return { success: true, message: 'Order status successfully updated' };
   }
 }
 
